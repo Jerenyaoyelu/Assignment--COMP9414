@@ -14,15 +14,18 @@ isfather(Person1,Person2):-
     male(Person1),
     parent(Person1,Person2).
 
-%return true if Person1 and Person2 are siblings.
-issibling(Person1,Person2):-
-    isfather(_,Person1),
-    isfather(_,Person2),
-    Person1 \= Person2.
-
-%return true if they have same family name which is promised by that they are either father and son(daughter) or siblings.
+%return the first male ancester of a Person
+maleancester(A,B):-
+    isfather(A,B).
+maleancester(Ancester, Person):-
+    isfather(Temp, Person),
+    maleancester(Ancester,Temp).
+    
+%return ture if two people have the same family name which is promised by that they have the same male ancester.
 same_name(Person1,Person2):-
-    (isfather(Person1,Person2);issibling(Person1,Person2)).
+    maleancester(Ancester1,Person1),
+    maleancester(Ancester2,Person2),
+    Ancester1 = Ancester2.
 
 
 %q3:
