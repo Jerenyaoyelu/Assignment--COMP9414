@@ -31,6 +31,12 @@ same_name(Person1,Person2):-
     maleancester(Ancester1,Person1),
     maleancester(Ancester2,Person2),
     Ancester1 = Ancester2.
+same_name(Person1,Person2):-
+    maleancester(Ancester1,Person1),
+    Ancester1 = Person2.
+same_name(Person1,Person2):-
+    maleancester(Ancester2,Person2),
+    Ancester2 = Person1.
 
 
 %q3:
