@@ -19,24 +19,24 @@ isfather(Person1,Person2):-
     male(Person1),
     parent(Person1,Person2).
 
-%return the first male ancester of a Person
-maleancester(A,B):-
+%return the first male ancestor of a Person
+maleancestor(A,B):-
     isfather(A,B).
-maleancester(Ancester, Person):-
+maleancestor(Ancestor, Person):-
     isfather(Temp, Person),
-    maleancester(Ancester,Temp).
+    maleancestor(Ancestor,Temp).
 
-%return ture if two people have the same family name which is promised by that they have the same male ancester.
+%return ture if two people have the same family name which is promised by that they have the same male ancestor.
 same_name(Person1,Person2):-
-    maleancester(Ancester1,Person1),
-    maleancester(Ancester2,Person2),
-    Ancester1 = Ancester2.
+    maleancestor(Ancestor1,Person1),
+    maleancestor(Ancestor2,Person2),
+    Ancestor1 = Ancestor2.
 same_name(Person1,Person2):-
-    maleancester(Ancester1,Person1),
-    Ancester1 = Person2.
+    maleancestor(Ancestor1,Person1),
+    Ancestor1 = Person2.
 same_name(Person1,Person2):-
-    maleancester(Ancester2,Person2),
-    Ancester2 = Person1.
+    maleancestor(Ancestor2,Person2),
+    Ancestor2 = Person1.
 
 
 %q3:
