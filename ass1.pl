@@ -36,52 +36,27 @@ sqrt_list([Head|Tail],[[Head,S]|ResultofTail]):-
     sqrt_list(Tail,ResultofTail).
 
 %q4:
-% concat([],List2,List2).
-% concat([Head|Tail],NewList,[Head|Concat_Tail_List2]):-
-%     concat(Tail,NewList,Concat_Tail_List2).
-
-% sign_runs([],[]).
-% sign_runs([H|T],[[H|[HHofrest|THofrest]]|Tofrest]):-
-%     (H*HHofrest =< 0 *-> HHofrest = [],THofrest = [];true),
-%     sign_runs(T,[[HHofrest|THofrest]|Tofrest]).
-
-%method2:error in line 51: Arguments are not sufficiently instantiated
-% sign_runs([H|T],[HofRest|TofRest]):-
-%     [HH|TT] = HofRest,
-%     Temp = [HH|TT],
-%     (H*HH =< 0 *-> HofRest is [[H]|Temp];
-%     (Temp = [] *-> HofRest is [[H]|Temp];HofRest is [H|Temp])),
-%     sign_runs(T,[Temp|TofRest]).
-
-% sign_runs([Head|Tail],Result):-
-%     Temp = Result,
-%     (Temp = [] *-> Result is [Head];
-%     [Head2|Tail2] = Result,
-%     [Head3|_Tail3] = Head2,
-%     Temp2 = [Head2|Tail2],
-%     (Head*Head3 =< 0 *-> Result is [[Head]|Temp2];
-%     Temp3 = [Head|Head2], Result is [Temp3|Tail2])),
-    %[Head4|Tail4] = Tail,
-    %sign_runs(Tail4,).
-
-
-%test
-sign_runs([],[]).
-sign_runs([Head | Tail], [E, O | S]):-
-   positive([Head | Tail], E, Last),
-   negative(Last, O, Last1),
-   sign_runs(Last1, S).
-
+%recursively pick up the continous positive integers until encounter a negative integer.
+positive([],[],[]).
 positive([Head | Tail], [], [Head | Tail]):-
    Head < 0.
-positive([Head | Tail], [Head | L], Last):-
+positive([Head | Tail], [Head | L], Rest):-
    Head >= 0,
-   positive(Tail, L, Last).
-positive([],[],[]).
+   positive(Tail, L, Rest).
 
+%recursively pick up the continous negative integers until encounter a positive integer.
+negative([],[],[]).
 negative([Head | Tail], [], [Head | Tail]) :- 
    Head >= 0.
-negative([Head | Tail], [Head | L], Last) :-
+negative([Head | Tail], [Head | L], Rest) :-
    Head < 0,
-   negative(Tail, L, Last).
-negative([],[],[]).
+   negative(Tail, L, Rest).
+
+%divide a list into different parts of sublists.
+sign_runs([],[]).
+sign_runs([Head | Tail], [FirstPart, SecondPart | EndPart]):-
+   positive([Head | Tail], FirstPart, Last),
+   negative(Last, SecondPart, Last1),
+   sign_runs(Last1, EndPart).
+
+%q5:
