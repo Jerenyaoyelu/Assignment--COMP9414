@@ -69,18 +69,10 @@ sign_runs([Head | Tail], [FirstPart, SecondPart | EndPart]):-
 compare(empty, _ ).
 compare(tree(_,Value1,_),Value):-
     Value1 >= Value.
-
+%returns true if Tree satisfies the heap property, and false otherwise.
 is_heap(empty).
 is_heap(tree(Left,Value,Right)):-
     compare(Left,Value),
     compare(Right,Value),
     is_heap(Left),
     is_heap(Right).
-
-%this will fail is because cant handle the case that when the search goes to the leaf node, cant compare empty and a number.
-% is_heap(empty).
-% is_heap(tree(tree(LLeft,LNum,LRight),Num,tree(RLeft,RNum,RRight))):-
-%     RNum >= Num,
-%     LNum >= Num,
-%     is_heap(tree(RLeft,RNum,RRight)),
-%     is_heap(tree(LLeft,LNum,LRight)).
