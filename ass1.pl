@@ -6,7 +6,12 @@
 sumsq_even([],0).
 sumsq_even([Head|Tail], Sum):-
     sumsq_even(Tail,SumOfTail),
-    (0 =:= Head mod 2 *-> Sum is Head*Head + SumOfTail; Sum is SumOfTail).
+    0 is Head mod 2,
+    Sum is Head*Head + SumOfTail.
+sumsq_even([Head|Tail], Sum):-
+    sumsq_even(Tail,SumOfTail),
+    1 is Head mod 2,
+    Sum is SumOfTail.
 
 %q2: 
 %return true if Person1 is a father of Person2.
@@ -60,3 +65,4 @@ sign_runs([Head | Tail], [FirstPart, SecondPart | EndPart]):-
    sign_runs(Last1, EndPart).
 
 %q5:
+%is_heap(Tree)
