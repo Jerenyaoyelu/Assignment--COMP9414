@@ -65,4 +65,22 @@ sign_runs([Head | Tail], [FirstPart, SecondPart | EndPart]):-
    sign_runs(Last1, EndPart).
 
 %q5:
-%is_heap(Tree)
+%return true if Value1 is no less than Value.
+compare(empty, _ ).
+compare(tree(_,Value1,_),Value):-
+    Value1 >= Value.
+
+is_heap(empty).
+is_heap(tree(Left,Value,Right)):-
+    compare(Left,Value),
+    compare(Right,Value),
+    is_heap(Left),
+    is_heap(Right).
+
+%this will fail is because cant handle the case that when the search goes to the leaf node, cant compare empty and a number.
+% is_heap(empty).
+% is_heap(tree(tree(LLeft,LNum,LRight),Num,tree(RLeft,RNum,RRight))):-
+%     RNum >= Num,
+%     LNum >= Num,
+%     is_heap(tree(RLeft,RNum,RRight)),
+%     is_heap(tree(LLeft,LNum,LRight)).
