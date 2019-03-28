@@ -1,0 +1,337 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<!-- saved from url=(0070)http://www.cse.unsw.edu.au/~cs9414/Assignments/2019t1/prolog_spec.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>COMP3411/9414 Project 1</title>
+</head>
+<body lang="EN">
+<h2 align="center">COMP3411/9414 Artificial Intelligence</h2>
+<h2 align="center">Session 1, 2019</h2>
+<h3 align="center">Assignment 1 - Prolog Programming</h3>
+<p align="center">
+Due: Sunday 24 March, 11:59pm
+<br align="center">
+Marks: 12% of final assessment for COMP3411/9414 Artificial Intelligence
+
+</p><hr>
+
+<h3>Specification</h3>
+
+In this assignment, you are to write Prolog procedures to
+perform some list and tree operations. The aim of the assignment is to give you
+experience with typical Prolog programming techniques.
+<p>
+
+</p><p>
+At the start of your program,  place a comment containing
+<b>your full name, student number and assignment name</b>.
+You may add additional information like the date the program was completed, etc.
+if you wish.
+</p>
+
+<p>
+At the start of each Prolog predicate that you write, write a comment
+describing the overall function of the predicate.
+</p>
+
+<p>Advice on the use of comments and meaningful identifiers in Prolog
+can be found under 
+<a href="http://www.cse.unsw.edu.au/~billw/prologdict.html#comment">comments</a>
+in the <a href="http://www.cse.unsw.edu.au/~billw/prologdict.html">Prolog
+Dictionary</a>.
+</p>
+
+<hr>
+<h3>Testing Your Code</h3>
+<p>
+A significant part of completing this assignment will be
+testing the code you write to make sure that it works correctly. To do this, you
+will need to design test cases that exercise every part of the code.
+</p>
+<p>
+You should pay particular attention to "boundary cases", that is,
+what happens when the data you are testing with is very small, or in
+some way special. For example:
+
+</p><ul>
+<li> What happens when the list you input has no members, or only one member?
+</li><li> Does you code work for lists with both even and odd numbers of members?
+</li><li> Does your code work for negative numbers?
+</li></ul>
+
+Note: not all of these matter in all cases, so
+for example with <code>sqrt_list</code>, negative numbers don't have
+square roots, so it doesn't make sense to ask whether your code works with
+negative numbers.
+<p>
+With each question, some example test data are provided to clarify
+what the code is intended to do. You need to think of additional
+test data in order to thoroughly test your code.
+Testing, and thinking of appropriate test cases, is part of the total programming task.
+</p><p>
+Note: You are <b>not</b> required to include test cases with your submission.
+If they are in your code, you should either comment them out or remove them
+prior to submitting.
+
+</p><hr>
+<h3>Style and Exclusions</h3>
+<p>
+  For this assignment, you are NOT allowed to use disjunctives (;) or cuts (!)
+  and you are NOT allowed to use the built-in predicates append(), findall() or maplist().
+</p><p>
+  Specifically, the characters ';', '!' and the strings "append", "findall", "maplist"
+  must NOT occur anywhere in your file (not even in the comments).
+  Otherwise, marks will be deducted.
+</p><p>
+</p><hr>
+<p>
+<strong>It is important to use <u>exactly</u> the names given below
+for your predicates, otherwise the automated testing procedure will
+not be able to find your predicates and you will lose marks. Even the
+capitalisation of your predicate names must be as given below.</strong>
+</p>
+<p>
+</p>
+
+<!-------------------- Question 1 --------------------->
+
+<hr>
+<ol start="1">
+
+<li>Write a predicate <code>sumsq_even(Numbers, Sum)</code> that sums the
+squares of only the even numbers in a list of integers.  <i>Example:</i>
+<pre>?- sumsq_even([1,3,5,2,-4,6,8,-7], Sum).
+
+Sum = 120 
+</pre>
+
+<p>
+In order to decide whether a number is even or odd, you can use the
+built-in Prolog operator <code>N mod M</code>, which computes the remainder
+after dividing  the whole number <code>N</code> by the whole number
+<code>M</code>. Thus a number <code>N</code> is even if the goal
+<code>0 is N mod 2</code> succeeds. Remember that arithmetic expressions
+like <code>X + 1</code> and <code>N mod M</code> are only evaluated,
+in Prolog, if they appear <i>after</i> the <code>is</code> operator. So 
+<code>0 is N mod 2</code> works, but <code>N mod 2 is 0</code> doesn't work.
+</p><p>
+</p></li></ol>
+
+<hr>
+<ol start="2">
+<p>
+</p><li> Suppose that a set of family relationships have been loaded into Prolog using the same format as 
+<a href="http://www.cse.unsw.edu.au/~cs9414/Labs/family.pl"><code>family.pl</code></a>
+
+<pre>parent(jim, brian).
+parent(brian, jenny).
+parent(pat, brian).
+female(pat).
+female(jenny).
+male(jim).
+male(brian).
+</pre>
+<b>NOTE:</b> do not include these in your solution file.
+<p>
+We assume that each person will have the same family name as their father,
+but that married women retain their original birth name.
+</p><p>
+Write a predicate <code>same_name(Person1,Person2)</code>
+that succeeds if it can be deduced from the facts
+in the database that <code>Person1</code> and <code>Person2</code>
+will have the same family name.
+(It is ok if your code returns <code>true</code> multiple times).
+For example:
+</p><pre>?- same_name(pat, brian).
+false.
+
+?- same_name(jenny, jim).
+true 
+</pre>
+<p>
+Note that your <code>same_name</code> predicate will be tested with
+different facts to those in <code>family.pl</code>
+</p>
+</li></ol>
+
+<hr>
+<ol start="3">
+<p>
+</p><li> Write a predicate <code>sqrt_list(NumberList, ResultList)</code>
+that binds <code>ResultList</code> to the list of pairs consisting
+of a number and its square root, for each number in <code>NumberList</code>.
+For example:
+<pre>?- sqrt_list([0,2,289], Result).
+Result = [[0, 0.0], [2, 1.4142135623730951], [289, 17.0]].
+
+</pre>
+Note that the Prolog built-in function <code>sqrt</code> computes the
+square root, and that it needs to be evaluated using
+<code>is</code> to actually do the computation:
+
+<pre>?- X is sqrt(5).
+X = 2.23606797749979.
+
+?- X = sqrt(5).
+X = sqrt(5).
+</pre>
+
+</li></ol>
+
+<hr>
+<ol start="4">
+<p>
+</p><li> Any list of integers can (uniquely) be broken into
+ "sign runs" where each run is a (maximal) sequence of
+consecutive negative or non-negative numbers within the original list.
+
+For example, the list
+<pre>List = [8,-1,-3,0,2,0,-4]
+</pre>
+can be broken into <code>[8], [-1,-3], [0,2,0]</code>
+and <code>[-4]</code>
+<p>
+Write a predicate <code>sign_runs(List, RunList)</code>
+that converts a list of numbers into the corresponding list of sign runs.
+For example:
+</p><pre>?- sign_runs([8,-1,-3,0,2,0,-4], RunList).
+RunList = [[8], [-1, -3], [0, 2, 0], [-4]]
+</pre>
+
+<p>
+</p></li></ol>
+
+<p>
+</p><hr>
+
+<ol start="5">
+<p>
+</p><li> In this question we consider binary trees which are represented
+as either <code>empty</code> or
+<code>tree(L, Num, R)</code>, where <code>L</code> and <code>R</code>
+are the left and right subtrees and <code>Num</code> is a number.
+A binary tree of numbers is called a <i>heap</i>
+(or, it is said to satisfy the <i>heap property</i>)
+if, for every non-leaf node in the tree,
+the number stored at that node is less than or equal to the number
+stored at each of its children.
+For example, the following tree satisfies the heap property, because
+3 &#8804; 5, 5 &#8804; 8 and 5 &#8804; 7.
+<pre>tree(empty,3,tree(tree(empty,8,empty),5,tree(empty,7,empty)))
+</pre>
+
+On the other hand, the following tree does not satisfy the heap property,
+because 6 is not less than or equal to 5.
+<pre>tree(tree(tree(empty,4,empty),
+        3,tree(empty,5,empty)),6,tree(tree(empty,9,empty),7,empty))
+</pre>
+
+Write a predicate <code>is_heap(Tree)</code> which returns <code>true</code>
+if <code>Tree</code> satisfies the heap property, and <code>false</code> otherwise.
+For example:
+<pre>?- is_heap(tree(tree(tree(empty,4,empty),
+         3,tree(empty,5,empty)),6,tree(tree(empty,9,empty),7,empty))).
+false.
+
+?- is_heap(tree(empty,3,tree(tree(empty,8,empty),5,tree(empty,7,empty)))).
+true 
+
+</pre>
+<p>
+</p></li></ol>
+
+<hr>
+<h3>Testing</h3>
+<p>
+This assignment will be tested primarily by an automated testing system.
+</p><p>
+Your code must work under the version of SWI Prolog used on the Linux
+machines in the UNSW School of Computer Science and Engineering. If you
+develop your code on any other platform, it is your responsibility to
+re-test and if necessary correct your code when you transfer it to a CSE
+Linux machine prior to submission.
+</p>
+
+<hr>
+<h3>Submitting your assignment</h3>
+
+<p>Put the Prolog code for all problems into a single file for submission
+purposes.
+</p>
+
+<p>
+<b>COMP3411 students:</b> to hand in,
+log in to a School of CSE Linux workstation or server,
+make sure that your program is in the current working directory,
+and use the Unix command:
+</p><pre>% <i>give cs3411 prolog mycode.pl</i>
+</pre>
+where <code><i>mycode.pl</i></code> is replaced by the name of the file with your
+code in it.
+<p></p>
+
+<p>
+<b>COMP9414 students:</b> to hand in,
+log in to a School of CSE Linux workstation or server,
+make sure that your program is in the current working directory,
+and use the Unix command:
+</p><pre>% <i>give cs9414 prolog mycode.pl</i>
+</pre>
+where <code><i>mycode.pl</i></code> is replaced by the name of the file with your
+code in it.
+<p>
+<b>Please make sure your code works on CSE's Linux machines and
+generates no warnings. Remove all test code from your submission,
+including that for question 2. Make sure you have named your
+predicates correctly.</b>
+</p><p>
+When you submit, your code will be run through a small number of
+preliminary tests, mainly to check there are no syntax errors,
+your predicates are correctly named and in the right format, etc.
+</p><p>
+You can submit as many times as you like - later submissions
+will overwrite earlier ones.
+</p><p>
+Don't wait until the last day to submit!
+Submitting early and often (even a partial solution)
+may save you time and effort by helping you to identify potential problems early.
+</p><p>
+You can check that your submission
+has been received by using one of these commands:
+</p><p>
+<tt>% 3411 classrun -check prolog</tt><br>
+<tt>% 9414 classrun -check prolog</tt>
+</p><p>
+The submission deadline is Sunday 24 March, 11:59 pm.<br>
+15% penalty will be applied to the (maximum) mark
+for every 24 hours late after the deadline.
+</p><p>
+Questions relating to the project can be posted to the
+Forums on the course Web site.
+</p><p>
+If you have a question that has not already been answered on
+the Forum, you can email it to
+<code>blair@cse.unsw.edu.au</code>
+</p><p>
+
+</p><h4>Plagiarism Policy</h4>
+<p>
+Group submissions will not be allowed.
+Your program must be entirely your own work.
+Plagiarism detection software will be used to compare all submissions pairwise
+(including submissions for any similar projects from previous years)
+and serious penalties will be applied, particularly in the case
+of repeat offences.
+</p><p>
+<b>DO NOT COPY FROM OTHERS; DO NOT ALLOW ANYONE TO SEE YOUR CODE</b>
+</p><p>
+Please refer to the
+<a href="https://student.unsw.edu.au/plagiarism">UNSW Policy on Academic Honesty and Plagiarism</a>
+if you require further clarification on this matter.
+</p><p>
+</p><p>
+Good luck!
+<br>
+</p><hr>
+
+
+</body></html>
