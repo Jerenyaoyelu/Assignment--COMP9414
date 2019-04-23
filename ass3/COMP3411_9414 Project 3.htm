@@ -1,0 +1,343 @@
+
+<!-- saved from url=(0044)http://www.cse.unsw.edu.au/~cs3411/19t1/hw3/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>COMP3411/9414 Project 3</title>
+</head>
+<body lang="EN">
+<h2 align="center">COMP3411/9414 Artificial Intelligence</h2>
+<h2 align="center">Term 1, 2019</h2>
+<h3 align="center">Project 3: Nine-Board Tic-Tac-Toe </h3>
+<p align="center">
+Due: Wednesday 1 May, 11:59 pm
+<br align="center">
+Marks: 16% of final assessment
+</p><p>
+
+</p><h4>Introduction</h4>
+
+In this project you will be writing an agent to play the
+game of Nine-Board Tic-Tac-Toe.
+<p>
+This game is played on a 3 x 3 array of 3 x 3 Tic-Tac-Toe boards.
+The first move is made by placing an <code>X</code> in a randomly
+chosen cell of a randomly chosen board.
+After that, the two players take turns placing an <code>O</code>
+or <code>X</code> alternately into an empty cell of the board
+corresponding to the cell of the previous move.
+(For example, if the previous move was into the upper right corner
+of a board, the next move must be made into the upper right board.)
+
+</p><p>
+The game is won by getting three-in-a row either horizontally,
+vertically or diagonally in one of the nine boards.
+If a player is unable to make their move
+(because the relevant board is already full)
+the game ends in a draw.
+
+</p><h4>Getting Started</h4>
+
+Copy the archive <a href="http://www.cse.unsw.edu.au/~cs3411/19t1/hw3/src.zip"><code>src.zip</code></a>
+into your own filespace and unzip it. Then type
+<pre>cd src
+make all
+
+./servt -x -o
+</pre>
+You should then see something like this:
+<pre> . . . | . . . | . . .
+ . . . | . . . | . . .
+ . . . | . . . | . . .
+ ------+-------+------
+ . . . | . . . | . . .
+ . . . | . . . | . . .
+ . . . | . . x | . . .
+ ------+-------+------
+ . . . | . . . | . . .
+ . . . | . . . | . . .
+ . . . | . . . | . . .
+
+next move for O ? 
+</pre>
+You can now play Nine-Board Tic-Tac-Toe against yourself,
+by typing a number for each move.
+<br>
+The cells in each board are numbered 1, 2, 3, 4, 5, 6, 7, 8, 9
+as follows:
+<pre>+-----+
+|1 2 3|
+|4 5 6|
+|7 8 9|
++-----+
+</pre>
+<p>
+To play against a computer player,
+you need to open another terminal window
+(and <code>cd</code> to the <code>src</code> directory).
+</p><p>
+Type this into the first window:
+</p><pre>./servt -p 12345 -x
+</pre>
+This tells the server to use port <code>12345</code> for communication,
+and that the moves for <code>X</code> will be chosen by you, the human,
+typing at the keyboard.
+(If port <code>12345</code> is busy, choose another 5-digit number.)
+<p>
+You should then type this into the second window
+(using the same port number):
+</p><pre>./randt -p 12345
+</pre>
+The program <code>randt</code>
+simply chooses each move randomly among the available legal moves.
+<p>
+The Prolog program <code>random.pl</code> behaves in exactly the same
+way. You can play against it by typing this into the second window:
+</p><pre>prolog 12345 &lt; agent.wrap
+</pre>
+You can play against a slightly more sophisticated player by typing
+this into the second window:
+<pre>./lookt -p 12345
+</pre>
+(If you are using a Mac, type <code>./lookt.mac</code> instead of <code>./lookt</code>)
+<p>
+To play two computer programs against each other,
+you may need to open three windows.
+For example, to play <code>agent</code> against <code>lookt</code>
+using port <code>54321</code>, type as follows:
+</p><p>
+<table>
+<tbody><tr><td>window 1:</td><td><code>./servt -p 54321</code></td></tr>
+<tr><td>window 2:</td><td><code>./agent -p 54321</code></td></tr>
+<tr><td>window 3:</td><td><code>./lookt -p 54321</code></td></tr>
+</tbody></table>
+</p><p>
+(Whichever program connects first will play <code>X</code>;
+the other program will play <code>O</code>.)<br>
+Alternatively, you can launch all three programs from a single window by typing
+</p><p>
+</p><pre>./servt -p 54321 &amp;
+./agent -p 54321 &amp;
+./lookt -p 54321
+</pre>
+<p></p>
+or, using a shell script:
+<pre>./playc.sh lookt 54321
+</pre>
+To play the prolog program <code>agent.pl</code> against
+<code>lookt</code> using port <code>23232</code>, you can type
+<p>
+</p><pre>./servt -p 23232 &amp;
+prolog 23232 &lt; agent.wrap &amp;
+./lookt -p 23232
+</pre>
+<p></p>
+or, using a shell script:
+<pre>./playpl.sh lookt 23232
+</pre>
+(If you are using a Mac, edit <code>playpl.sh</code> and replace <code>"prolog"</code> with <code>"swipl"</code>)
+<p>
+ The strength of <code>lookt</code> can be adjusted by specifying a maximum search depth
+(default value is 9; reasonable range is 1 to 18), e.g.
+</p><pre>./lookt -p 12345 -d 6
+</pre>
+or
+<pre>./playc.sh "lookt -d 16" 54321
+</pre>
+
+<h4>Writing a Player</h4>
+
+Your task is to write a program to play the game of
+nine-board tic-tac-toe as well as you can.
+<p>
+Your program will receive commands from the server
+(<code>init, start(), second_move(), third_move(),
+last_move(), win(), loss(), draw(), end()</code>)
+and must send back a single digit specifying the chosen move.<br>
+(the parameters for these commands
+are explained in the comments of <code>agent.pl</code>)
+</p><p>
+Communication between the server and the player(s)
+is illustrated in this brief example:
+</p><p>
+<table border="0">
+<tbody><tr><th><u>Player X</u></th><th></th><th align="center"><u>Server</u></th><th></th><th><u>Player O</u></th></tr>
+<tr><td></td><td>&#8592;</td><td align="left">init</td></tr>
+<tr><td></td><td></td><td align="right">init</td><td>&#8594;</td></tr>
+<tr><td></td><td>&#8592;</td><td align="left">start(x)</td></tr>
+<tr><td></td><td></td><td align="right">start(o)</td><td>&#8594;</td></tr>
+<tr><td></td><td></td><td align="center">second_move(6,1)</td><td>&#8594;</td></tr>
+<tr><td></td><td></td><td></td><td>&#8592;</td><td>7</td></tr>
+<tr><td></td><td>&#8592;</td><td align="center">third_move(6,1,7)</td><td></td></tr>
+<tr><td align="right">9</td><td>&#8594;</td><td></td><td></td></tr>
+<tr><td></td><td></td><td align="right">next_move(9)</td><td>&#8594;</td></tr>
+<tr><td></td><td></td><td></td><td>&#8592;</td><td>6</td></tr>
+<tr><td></td><td>&#8592;</td><td align="left">next_move(6)</td><td></td></tr>
+<tr><td align="right">5</td><td>&#8594;</td><td></td><td></td></tr>
+<tr><td></td><td></td><td align="right">last_move(5)</td><td>&#8594;</td></tr>
+<tr><td></td><td>&#8592;</td><td align="left">win(triple)</td><td></td></tr>
+<tr><td></td><td></td><td align="right">loss(triple)</td><td>&#8594;</td></tr>
+<tr><td></td><td>&#8592;</td><td align="left">end</td></tr>
+<tr><td></td><td></td><td align="right">end</td><td>&#8594;</td></tr>
+</tbody></table>
+</p><p>
+
+</p><h4>Language Options</h4>
+  
+You are free to write your player in any language you wish.
+
+<ol>
+  <li>
+    If you write in Prolog, your program will be invoked like this:
+<pre>prolog (port) &lt; agent.wrap
+</pre>
+You should submit your <code>.pl</code> files
+(including <code>agent.pl</code>).
+Feel free to use <code>agent.pl</code>
+(identical to <code>randt.pl</code>) as a starting point,
+as well as <code>alphabeta.pl</code>
+(which implements alpha-beta search for regular Tic-Tac-Toe).
+<p>
+
+</p></li><li>
+If you write in Java, your program will be invoked by
+<pre>java Agent -p (port)
+</pre>
+You should submit your <code>.java</code> files
+(no <code>.class</code> files).
+The main file must be called <code>Agent.java</code>
+<p>
+
+</p></li><li>
+  If you write in Python, your program will be invoked by
+<pre>./agent.py -p (port)
+</pre>
+  You should submit your <code>.py</code> files
+  (including <code>agent.py</code>). The first line of your
+  code must specify which version of Prolog you are using, e.g.
+  <pre>#!/usr/bin/python
+ </pre>
+
+</li><li>
+  If you write in C or C++, your program will be invoked by:
+<pre>./agent -p (port)
+</pre>
+You should submit your source files (no object files) as well as a
+<code>Makefile</code> which, when invoked with the command "<code>make</code>",
+will produce an executable called <code>agent</code> .
+Feel free to use the supplied files as a starting point
+(especially <code>agent.c</code> which is identical to <code>randt.c</code>)
+<p>
+
+</p></li></ol>
+
+If you wish to write in some other language, let me know.
+
+<h4>Question</h4>
+
+<p>
+At the top of your code, in a block of comments,
+you must provide a brief answer (one or two paragraphs)
+to this Question:
+</p><blockquote>
+Briefly describe how your program works, including any algorithms
+and data structures employed, and explain any design decisions
+you made along the way.
+</blockquote>
+
+<h4>Groups</h4>
+
+This assignment may be done individually, or in groups of two students.
+Groups are determined by an SMS field called <code>hw3group</code>.
+
+Every student has initially been assigned a unique <code>hw3group</code> which is
+<code>"h"</code> followed by their studentID number, e.g. <code>h1234567</code>.
+
+<ol type="1">
+<li>
+  If you plan to complete the assignment individually, you don't need to
+  do anything (but, if you do create a group with only you as a member,
+  that's ok too).
+</li><li>
+  If both members of the group are enrolled in COMP3411, you should go to this
+  <a href="https://webcms3.cse.unsw.edu.au/COMP3411/19T1/">WebCMS page</a>
+  and click on "Groups" in the left hand column, then click "Create".
+
+  Click on the menu for "Group Type" and select "hw3". After creating
+  a group, click "Edit", search for the other member, and click "Add".
+  WebCMS assigns a unique group ID to each group, in the form of
+  <code>"g"</code> followed by six digits (e.g. <code>g012345</code>).
+  We will periodically run a script to load these values into SMS.
+
+</li><li>
+  If both members of the group are enrolled in COMP9414, go instead to this
+  <a href="https://webcms3.cse.unsw.edu.au/COMP9414/19T1/">WebCMS page</a>
+  and follow the same instructions as above.
+  </li><li> If one group member is enrolled in COMP3411 and the other in COMP9414,
+    please send email to <code>blair@cse.unsw.edu.au</code>
+    stating the name and student number of the two group members.
+</li></ol>
+  
+<h4>Submission</h4>
+
+COMP3411 students should submit by typing
+<pre>give cs3411 hw3 ...
+</pre>
+COMP9414 students should submit by typing
+<pre>give cs9414 hw3 ...
+</pre>
+<p>
+You can submit as many times as you like - later submissions
+will overwrite earlier ones. You can check that your submission
+has been received by using the following command:
+</p><p>
+<code>3411 classrun -check</code><br>
+<code>9414 classrun -check</code>
+</p><p>
+The submission deadline is Wednesday 1 May, 11:59 pm.<br>
+15% penalty will be applied to the (maximum) mark
+for every 24 hours late after the deadline.
+</p><p>
+Additional information may be found in the
+<a href="http://www.cse.unsw.edu.au/~cs3411/19t1/hw3/faq.shtml">FAQ</a>
+and will be considered as part of the specification for the project.
+</p><p>
+Questions relating to the project can be posted to the
+Forums on the course Web site.
+If you have a question that has not already been answered on
+the Forum, you can email it to
+<code>blair@cse.unsw.edu.au</code>
+
+</p><h4>Marking scheme</h4>
+
+<ul>
+<li>10 marks for performance against a number of pre-defined opponents.
+</li><li>&nbsp;6 marks for Algorithms, Style, Comments and answer to the Question
+</li></ul>
+You should always adhere to good coding practices and style.
+In general, a program that attempts a substantial
+part of the job but does that part correctly
+will receive more marks than one attempting to do
+the entire job but with many errors.
+
+<h4>Plagiarism Policy</h4>
+DO NOT COPY CODE FROM THE INTERNET. This approach has a very specific
+structure. Copying/adapting code is likely to take much longer than understanding the logic behind the provided file. It's also plagiarism.
+<p>
+Your program must be entirely your own work.
+Plagiarism detection software will be used to compare all submissions pairwise
+(including submissions for any similar projects from previous years)
+and serious penalties will be applied, particularly in the case
+of repeat offences.
+</p><p>
+<b>DO NOT COPY FROM OTHERS; DO NOT ALLOW ANYONE TO SEE YOUR CODE</b>
+</p><p>
+Please refer to the
+<a href="https://student.unsw.edu.au/plagiarism">UNSW Policy on Academic Honesty and Plagiarism</a>
+if you require further clarification on this matter.
+</p><p>
+</p><p>
+Good luck!
+<br>
+</p><hr>
+
+
+</body></html>
