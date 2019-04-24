@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#define BLOCK 1000
+#define BLOCK 5000
 #define MAKING_3Xs 10000
 #define MAKING_2Xs 2
 #define BASIC_SCORE 1
@@ -123,7 +123,7 @@ int Eval(int subboard[10]){
                 (subboard[i] ==1 && subboard[i+1] ==1 && subboard[i+2] ==2)||
                 (subboard[i] ==2 && subboard[i+1] ==1 && subboard[i+2] ==1)||
                 (subboard[i] ==1 && subboard[i+1] ==2 && subboard[i+2] ==1)
-            ){value = value + MAKING_2Os;}
+            ){value = value + BLOCK;}
         }
     }
     //columns
@@ -133,7 +133,7 @@ int Eval(int subboard[10]){
                 (subboard[i] ==1 && subboard[i+3] ==1 && subboard[i+6] ==2)||
                 (subboard[i] ==2 && subboard[i+3] ==1 && subboard[i+6] ==1)||
                 (subboard[i] ==1 && subboard[i+3] ==2 && subboard[i+6] ==1)
-            ){value = value + MAKING_2Os;}
+            ){value = value + BLOCK;}
         }
     }
     //diagnoses
@@ -142,14 +142,14 @@ int Eval(int subboard[10]){
             (subboard[1] ==1 && subboard[5] ==1 && subboard[9] ==2)||
             (subboard[1] ==2 && subboard[5] ==1 && subboard[9] ==1)||
             (subboard[1] ==1 && subboard[5] ==2 && subboard[9] ==1)
-        ){value = value + MAKING_2Os;}
+        ){value = value + BLOCK;}
     }
     if(subboard[3] != 1 && subboard[5] != 1 && subboard[7] != 1){
         if(
             (subboard[3] ==1 && subboard[5] ==1 && subboard[7] ==2)||
             (subboard[3] ==2 && subboard[5] ==1 && subboard[7] ==1)||
             (subboard[3] ==1 && subboard[5] ==2 && subboard[7] ==1)
-        ){value = value + MAKING_2Os;}
+        ){value = value + BLOCK;}
     }
     return value;
 }
@@ -215,33 +215,37 @@ int alphabeta(int board[10], int depth, int alpha, int beta, int Player)
 }
 int getBestMove(int board[10][10], int prev_move, int depth, int player){
     int val;
-    // int v_array[10];
+    int v_array[10];
     int BM = 0;
-    int BS = -1000000000;
+    int BS = 1000000000;
     for(int i = 1; i< 10;i++){
         if(board[prev_move][i] == 2){
             board[prev_move][i] = 0;
             val = alphabeta(board[prev_move],depth,AL,BT,!player);
             board[prev_move][i] = 2;
-            // v_array[i] = val;
-            if(val > BS){
-                BS = val;
-                BM = i;
-            }
-            printf("%d\n",val);
+            v_array[i] = val;
+            // if(val > BS){
+            //     BS = val;
+            //     BM = i;
+            // }
+            // printf("%d\n",val);
         }
     }
-    // for(int i = 1; i <10; i ++){
-    //     int oppent;
-    //     if(v_array[i] != 0){
-    //         board[prev_move][i] = 0;
-    //         oppent = alphabeta(board[i],depth,AL,BT,player);
-    //         if(BS > v_array[i] - oppent){
-    //             BS = v_array[i] - oppent;
-    //             BM = i;
-    //         }
-    //     }
-    // }
+    //watch on next move
+    for(int i = 1; i <10; i ++){
+        int oppent;
+        if(board[prev_move][i] == 2){
+            if(v_array[i] != 0){// board[prev_move][i] must be 2
+                board[prev_move][i] = 0;
+                oppent = alphabeta(board[i],depth,AL,BT,player);
+                board[prev_move][i] = 2;
+                if(BS > v_array[i] - oppent){
+                    BS = v_array[i] - oppent;
+                    BM = i;
+                }
+            }
+        }
+    }
     return BM;
 }
 
