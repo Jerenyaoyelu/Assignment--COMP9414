@@ -12,8 +12,10 @@
 #include "common.h"
 #include "agent.h"
 #include "game.h"
+#include "alpha_beta_search.c"
 
 #define MAX_MOVE 81
+#define DEPTH 2
 
 int board[10][10];
 int move[MAX_MOVE+1];
@@ -87,12 +89,15 @@ void agent_start( int this_player )
 int agent_second_move( int board_num, int prev_move )
 {
   int this_move;
+  // int *val;
   move[0] = board_num;
   move[1] = prev_move;
   board[board_num][prev_move] = !player;
   m = 2;
   do {
     //my code goes here
+    // val = alphabeta(board[prev_move],-1,DEPTH,-2000,2000,player);
+    // this_move = val[0];
     this_move = 1 + random()% 9;
   } while( board[prev_move][this_move] != EMPTY );
   move[m] = this_move;
@@ -110,6 +115,7 @@ int agent_third_move(
                     )
 {
   int this_move;
+  // int *val;
   move[0] = board_num;
   move[1] = first_move;
   move[2] = prev_move;
@@ -118,6 +124,8 @@ int agent_third_move(
   m=3;
   do {
     // my code goes here
+    // val = alphabeta(board[prev_move],-1,DEPTH,-2000,2000,player);
+    // this_move = val[0];
     this_move = 1 + random()% 9;
   } while( board[prev_move][this_move] != EMPTY );
   move[m] = this_move;
@@ -131,6 +139,7 @@ int agent_third_move(
 int agent_next_move( int prev_move )
 {
   int this_move;
+  int *val;
   m++;
   move[m] = prev_move;
   board[move[m-1]][move[m]] = !player;
@@ -138,7 +147,9 @@ int agent_next_move( int prev_move )
   m++;
   do {
     //my code goes here
-    this_move = 1 + random()% 9;
+    val = alphabeta(board[prev_move],-1,DEPTH,-2000,2000,player);
+    this_move = val[0];
+    // printf("(%d):%d\n",val[0],val[1]);
   } while( board[prev_move][this_move] != EMPTY );
   move[m] = this_move;
   board[move[m-1]][this_move] = player;
