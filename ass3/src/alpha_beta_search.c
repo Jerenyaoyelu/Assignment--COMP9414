@@ -22,87 +22,87 @@
 // 5.Blockling 3O(i): 1000
 */
 //Eval version 2
-int Eval(char subboard[10]){
+int Eval(int subboard[10]){
     int value = 0;
     if(
         //columns
-        (subboard[1] == 'X' && subboard[4] == 'X' && subboard[7] == 'X')||
-        (subboard[2] == 'X' && subboard[5] == 'X' && subboard[8] == 'X')||
-        (subboard[3] == 'X' && subboard[6] == 'X' && subboard[9] == 'X')||
+        (subboard[1] == 0 && subboard[4] == 0 && subboard[7] == 0)||
+        (subboard[2] == 0 && subboard[5] == 0 && subboard[8] == 0)||
+        (subboard[3] == 0 && subboard[6] == 0 && subboard[9] == 0)||
         //rows
-        (subboard[1] == 'X' && subboard[2] == 'X' && subboard[3] == 'X')||
-        (subboard[4] == 'X' && subboard[5] == 'X' && subboard[6] == 'X')||
-        (subboard[7] == 'X' && subboard[8] == 'X' && subboard[9] == 'X')||
+        (subboard[1] == 0 && subboard[2] == 0 && subboard[3] == 0)||
+        (subboard[4] == 0 && subboard[5] == 0 && subboard[6] == 0)||
+        (subboard[7] == 0 && subboard[8] == 0 && subboard[9] == 0)||
         //diagnoses
-        (subboard[1] == 'X' && subboard[5] == 'X' && subboard[9] == 'X')||
-        (subboard[3] == 'X' && subboard[5] == 'X' && subboard[7] == 'X')
+        (subboard[1] == 0 && subboard[5] == 0 && subboard[9] == 0)||
+        (subboard[3] == 0 && subboard[5] == 0 && subboard[7] == 0)
     ){value = value + MAKING_3Xs;}
     else if(
         //columns
-        (subboard[1] == 'O' && subboard[4] == 'O' && subboard[7] == 'O')||
-        (subboard[2] == 'O' && subboard[5] == 'O' && subboard[8] == 'O')||
-        (subboard[3] == 'O' && subboard[6] == 'O' && subboard[9] == 'O')||
+        (subboard[1] == 1 && subboard[4] == 1 && subboard[7] == 1)||
+        (subboard[2] == 1 && subboard[5] == 1 && subboard[8] == 1)||
+        (subboard[3] == 1 && subboard[6] == 1 && subboard[9] == 1)||
         //rows
-        (subboard[1] == 'O' && subboard[2] == 'O' && subboard[3] == 'O')||
-        (subboard[4] == 'O' && subboard[5] == 'O' && subboard[6] == 'O')||
-        (subboard[7] == 'O' && subboard[8] == 'O' && subboard[9] == 'O')||
+        (subboard[1] == 1 && subboard[2] == 1 && subboard[3] == 1)||
+        (subboard[4] == 1 && subboard[5] == 1 && subboard[6] == 1)||
+        (subboard[7] == 1 && subboard[8] == 1 && subboard[9] == 1)||
         //diagnoses
-        (subboard[1] == 'O' && subboard[5] == 'O' && subboard[9] == 'O')||
-        (subboard[3] == 'O' && subboard[5] == 'O' && subboard[7] == 'O')
+        (subboard[1] == 1 && subboard[5] == 1 && subboard[9] == 1)||
+        (subboard[3] == 1 && subboard[5] == 1 && subboard[7] == 1)
     ){value = value + MAKING_3Os;}
     // rows
     for(int i = 1; i<10;i = i+3){
-        if(subboard[i] != 'O' && subboard[i+1] != 'O' && subboard[i+2] != 'O'){
+        if(subboard[i] != 1 && subboard[i+1] != 1 && subboard[i+2] != 1){
             if(
-                (subboard[i] =='X' && subboard[i+1] =='X' && subboard[i+2] =='e')||
-                (subboard[i] =='e' && subboard[i+1] =='X' && subboard[i+2] =='X')||
-                (subboard[i] =='X' && subboard[i+1] =='e' && subboard[i+2] =='X')
+                (subboard[i] ==0 && subboard[i+1] ==0 && subboard[i+2] ==2)||
+                (subboard[i] ==2 && subboard[i+1] ==0 && subboard[i+2] ==0)||
+                (subboard[i] ==0 && subboard[i+1] ==2 && subboard[i+2] ==0)
             ){value = value + MAKING_2Xs;}
             if(
-                (subboard[i] =='X' && subboard[i+1] =='e' && subboard[i+2] =='e')||
-                (subboard[i] =='e' && subboard[i+1] =='X' && subboard[i+2] =='e')||
-                (subboard[i] =='e' && subboard[i+1] =='e' && subboard[i+2] =='X')
+                (subboard[i] ==0 && subboard[i+1] ==2 && subboard[i+2] ==2)||
+                (subboard[i] ==2 && subboard[i+1] ==0 && subboard[i+2] ==2)||
+                (subboard[i] ==2 && subboard[i+1] ==2 && subboard[i+2] ==0)
             ){value = value + BASIC_SCORE;}
         }
     }
     //columns
     for(int i = 1; i<4;i++){
-        if(subboard[i] != 'O' && subboard[i+3] != 'O' && subboard[i+6] != 'O'){
+        if(subboard[i] != 1 && subboard[i+3] != 1 && subboard[i+6] != 1){
             if(
-                (subboard[i] =='X' && subboard[i+3] =='X' && subboard[i+6] =='e')||
-                (subboard[i] =='e' && subboard[i+3] =='X' && subboard[i+6] =='X')||
-                (subboard[i] =='X' && subboard[i+3] =='e' && subboard[i+6] =='X')
+                (subboard[i] ==0 && subboard[i+3] ==0 && subboard[i+6] ==2)||
+                (subboard[i] ==2 && subboard[i+3] ==0 && subboard[i+6] ==0)||
+                (subboard[i] ==0 && subboard[i+3] ==2 && subboard[i+6] ==0)
             ){value = value + MAKING_2Xs;}
             if(
-                (subboard[i] =='X' && subboard[i+3] =='e' && subboard[i+6] =='e')||
-                (subboard[i] =='e' && subboard[i+3] =='X' && subboard[i+6] =='e')||
-                (subboard[i] =='e' && subboard[i+3] =='e' && subboard[i+6] =='X')
+                (subboard[i] ==0 && subboard[i+3] ==2 && subboard[i+6] ==2)||
+                (subboard[i] ==2 && subboard[i+3] ==0 && subboard[i+6] ==2)||
+                (subboard[i] ==2 && subboard[i+3] ==2 && subboard[i+6] ==0)
             ){value = value + BASIC_SCORE;}
         }
     }
     //diagnoses
-   if(subboard[1] != 'O' && subboard[5] != 'O' && subboard[9] != 'O'){
+   if(subboard[1] != 1 && subboard[5] != 1 && subboard[9] != 1){
         if(
-            (subboard[1] =='X' && subboard[5] =='X' && subboard[9] =='e')||
-            (subboard[1] =='e' && subboard[5] =='X' && subboard[9] =='X')||
-            (subboard[1] =='X' && subboard[5] =='e' && subboard[9] =='X')
+            (subboard[1] ==0 && subboard[5] ==0 && subboard[9] ==2)||
+            (subboard[1] ==2 && subboard[5] ==0 && subboard[9] ==0)||
+            (subboard[1] ==0 && subboard[5] ==2 && subboard[9] ==0)
         ){value = value + MAKING_2Xs;}
         if(
-            (subboard[1] =='X' && subboard[5] =='e' && subboard[9] =='e')||
-            (subboard[1] =='e' && subboard[5] =='X' && subboard[9] =='e')||
-            (subboard[1] =='e' && subboard[5] =='e' && subboard[9] =='X')
+            (subboard[1] ==0 && subboard[5] ==2 && subboard[9] ==2)||
+            (subboard[1] ==2 && subboard[5] ==0 && subboard[9] ==2)||
+            (subboard[1] ==2 && subboard[5] ==2 && subboard[9] ==0)
         ){value = value + BASIC_SCORE;}
     }
-    if(subboard[3] != 'O' && subboard[5] != 'O' && subboard[7] != 'O'){
+    if(subboard[3] != 1 && subboard[5] != 1 && subboard[7] != 1){
         if(
-            (subboard[3] =='X' && subboard[5] =='X' && subboard[7] =='e')||
-            (subboard[3] =='e' && subboard[5] =='X' && subboard[7] =='X')||
-            (subboard[3] =='X' && subboard[5] =='e' && subboard[7] =='X')
+            (subboard[3] ==0 && subboard[5] ==0 && subboard[7] ==2)||
+            (subboard[3] ==2 && subboard[5] ==0 && subboard[7] ==0)||
+            (subboard[3] ==0 && subboard[5] ==2 && subboard[7] ==0)
         ){value = value + MAKING_2Xs;}
         if(
-            (subboard[3] =='X' && subboard[5] =='e' && subboard[7] =='e')||
-            (subboard[3] =='e' && subboard[5] =='X' && subboard[7] =='e')||
-            (subboard[3] =='e' && subboard[5] =='e' && subboard[7] =='X')
+            (subboard[3] ==0 && subboard[5] ==2 && subboard[7] ==2)||
+            (subboard[3] ==2 && subboard[5] ==0 && subboard[7] ==2)||
+            (subboard[3] ==2 && subboard[5] ==2 && subboard[7] ==0)
         ){value = value + BASIC_SCORE;}
     }
     return value;
@@ -126,28 +126,26 @@ function alphabeta( node, depth, α, β )
                 return β
         return β
 */
-int isFull(char board[10]){
-    int  t = 0;
+int isFull(int board[10]){
     for(int i = 1;i<10;i++){
-        if(board[i] == 'e'){
+        if(board[i] == 2){
             return 0;
         }
     }
     return 1;
 }
-int *alphabeta(char board[10], int next_move, int depth, int alpha, int beta, int Player)
+int *alphabeta(int board[10], int next_move, int depth, int alpha, int beta, int Player)
 {
     int *val2 = (int*) malloc(2*sizeof(int));
-    int val;
     if(isFull(board)==1 || depth == 0){
         val2[0] = next_move;
         val2[1] = Eval(board);
         return val2;
     }
-    if(Player){
+    if(!Player){
         for (int i = 1; i <10;i++){
-            if(board[i] == 'e'){
-                board[i] = 'X';
+            if(board[i] == 2){
+                board[i] = 0;
                 if(next_move <= 0){
                     next_move = i;
                 }
@@ -157,7 +155,7 @@ int *alphabeta(char board[10], int next_move, int depth, int alpha, int beta, in
                     next_move = i;
                 }
                 alpha = max(alpha,val2[1]);
-                board[i] = 'e';
+                board[i] = 2;
                 if (alpha >= beta){
                     return val2;
                 }
@@ -167,8 +165,8 @@ int *alphabeta(char board[10], int next_move, int depth, int alpha, int beta, in
     }
     else{
         for (int i = 1; i <10;i++){
-            if(board[i] == 'e'){
-                board[i] = 'O';
+            if(board[i] == 2){
+                board[i] = 1;
                 if(next_move <= 0){
                     next_move = i;
                 }
@@ -178,7 +176,7 @@ int *alphabeta(char board[10], int next_move, int depth, int alpha, int beta, in
                     next_move = i;
                 }
                 beta = min(beta, val2[1]);
-                board[i] = 'e';
+                board[i] = 2;
                 if (alpha >= beta){
                     return val2;
                 }
@@ -187,24 +185,24 @@ int *alphabeta(char board[10], int next_move, int depth, int alpha, int beta, in
         return val2;
     }
 }
-int main(){
-    int *val = (int*) malloc(2*sizeof(int));
-    int v;
-    char board[10][10] = {
-        {},
-        {' ','e','e','e','e','e','e','e','e','e'},
-        {' ','e','e','e','e','e','e','e','e','e'},
-        {' ','e','e','X','e','e','e','e','e','e'},
-        {' ','e','e','e','e','e','e','e','e','e'},
-        {' ','e','e','e','e','e','e','e','e','e'},
-        {' ','e','O','e','O','e','X','X','e','e'},
-        {' ','e','e','e','e','e','e','e','e','e'},
-        {' ','e','e','e','e','e','e','e','e','e'},
-        {' ','e','e','e','e','e','e','e','e','e'}
-    };
-    val = alphabeta(board[6],-1,5,-2000,2000,1);
-    printf("(%d):%d\n",val[0],val[1]);
-    return 0;
-}
+// int main(){
+//     int *val = (int*) malloc(2*sizeof(int));
+//     int v;
+//     int board[10][10] = {
+//         {},
+//         {' ',2,'e','e','e','e','e','e','e','e'},
+//         {' ','e','e','e','e','e','e','e','e','e'},
+//         {' ','e','e',0,'e','e','e','e','e','e'},
+//         {' ','e','e','e','e','e','e','e','e','e'},
+//         {' ','e','e','e','e','e','e','e','e','e'},
+//         {' ','e',1,'e','O','e','X','X','e','e'},
+//         {' ','e','e','e','e','e','e','e','e','e'},
+//         {' ','e','e','e','e','e','e','e','e','e'},
+//         {' ','e','e','e','e','e','e','e','e','e'}
+//     };
+//     val = alphabeta(board[6],-1,5,-2000,2000,1);
+//     printf("(%d):%d\n",val[0],val[1]);
+//     return 0;
+// }
 
 
