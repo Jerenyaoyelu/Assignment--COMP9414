@@ -139,7 +139,7 @@ int agent_third_move(
 int agent_next_move( int prev_move )
 {
   int this_move;
-  int *val;
+  int BM;
   m++;
   move[m] = prev_move;
   board[move[m-1]][move[m]] = !player;
@@ -147,8 +147,8 @@ int agent_next_move( int prev_move )
   m++;
   do {
     //my code goes here
-    val = alphabeta(board[prev_move],-1,DEPTH,-2000,2000,player);
-    this_move = val[0];
+    BM = getBestMove(board,prev_move,DEPTH,player);
+    this_move = BM;
     // printf("(%d):%d\n",val[0],val[1]);
   } while( board[prev_move][this_move] != EMPTY );
   move[m] = this_move;
