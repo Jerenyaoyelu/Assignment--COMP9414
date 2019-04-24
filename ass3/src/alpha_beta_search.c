@@ -1,12 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#define BLOCK 5000
-#define MAKING_3Xs 10000
-#define MAKING_2Xs 2
-#define BASIC_SCORE 1
-#define MAKING_3Os -20000
-#define MAKING_2Os -5000
+#define BLOCK -2
+#define MAKING_3Xs 10
+#define MAKING_2Xs 1
+#define BASIC_SCORE 0
+#define MAKING_3Os -10
 #define AL -20000000
 #define BT 20000000
 #ifndef max
@@ -115,7 +114,7 @@ int Eval(int subboard[10]){
         ){value = value + BASIC_SCORE;}
     }
 
-    // Blocking
+    // Making 2 Os
     // rows
     for(int i = 1; i<10;i = i+3){
         if(subboard[i] != 1 && subboard[i+1] != 1 && subboard[i+2] != 1){
@@ -215,7 +214,8 @@ int alphabeta(int board[10], int depth, int alpha, int beta, int Player)
 }
 int getBestMove(int board[10][10], int prev_move, int depth, int player){
     int val;
-    int v_array[10];
+    int X_array[10];
+    // int O_array[10];
     int BM = 0;
     int BS = 1000000000;
     for(int i = 1; i< 10;i++){
@@ -223,7 +223,7 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
             board[prev_move][i] = 0;
             val = alphabeta(board[prev_move],depth,AL,BT,!player);
             board[prev_move][i] = 2;
-            v_array[i] = val;
+            X_array[i] = val;
             // if(val > BS){
             //     BS = val;
             //     BM = i;
@@ -233,15 +233,28 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
     }
     //watch on next move
     for(int i = 1; i <10; i ++){
-        int oppent;
         if(board[prev_move][i] == 2){
-            if(v_array[i] != 0){// board[prev_move][i] must be 2
+            if(X_array[i] != 0){
                 board[prev_move][i] = 0;
-                oppent = alphabeta(board[i],depth,AL,BT,player);
-                board[prev_move][i] = 2;
-                if(BS > v_array[i] - oppent){
-                    BS = v_array[i] - oppent;
-                    BM = i;
+                //if next move is that I win, then choose first.
+                if(Eval(board[prev_move])==10){
+                    board[prev_move][i] = 2;
+                    return i;
+                }else{
+                    // choose the worst next next move for the opponent
+                    int worst_oppent = -10000;
+                    for(int j = 1; j<10;j++){
+                        if(board[i][j] == 2){
+                            board[i][j] = 1;
+                            worst_oppent = max(worst_oppent, Eval(board[i]));
+                            board[i][j] = 2;
+                        }
+                    }
+                    board[prev_move][i] = 2;
+                    if(BS > X_array[i] - worst_oppent){
+                        BS = X_array[i] - worst_oppent;
+                        BM = i;
+                    }
                 }
             }
         }
