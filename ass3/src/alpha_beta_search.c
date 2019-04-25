@@ -307,22 +307,22 @@ int ChooseMove(int board[10][10],int Performance[10],int prev_move, int player){
             }
         }
         printf("BS:%d\n",BScoreX);
-        // // must lose when no performance is greater than 0
-        // if(BScoreX == -1000){
-        //     for(int i =1; i <10;i++){
-        //         if(board[prev_move][i] == 2){
-        //             return i;
-        //         }
-        //     }
-        // }
+        // choose it when only performance left
+        if(Performance[0] == 1){
+            for(int i =1; i <10;i++){
+                if(Performance[i] > -1){return i;}
+            }
+        }
         // count the number of moves with the best performance of X
         // and store the moves
         for(int i =1; i <10;i++){
             if(Performance[i] ==  BScoreX){
                 ArrayOfBMove[i] = i;
                 ArrayOfBMove[0] ++;
-                // //prepare for the recursion
-                // Performance[i] = -1;
+                BestMove = i;
+                //prepare for the recursion
+                Performance[i] = -1;
+                Performance[0] --;
             }
         }
         // choose the one with most Xs in next board
@@ -337,18 +337,25 @@ int ChooseMove(int board[10][10],int Performance[10],int prev_move, int player){
                 //having the most Xs in next board but dont have ready to win situation
                 if(Count < Cal(board[i],0)){
                     Count = Cal(board[i],0);
-                    // if(isWon(board[i],1,2) != 1){
-                    BestMove = i;
-                    // }
+                    if(isWon(board[i],1,2) != 1){
+                        BestMove = i;
+                    }
                 }
                 board[prev_move][i] = 2;
             }
         }
-        printf("Me X:%d\n",BestMove);
+        
         //
-        // if( BestMove == 0){
-        //     return ChooseMove(board,Performance,prev_move,player);
-        // }
+        if( BestMove == 0){
+            if(Performance[0] > 0){
+                return ChooseMove(board,Performance,prev_move,player);
+            }
+            else{
+                printf("Me X:%d\n",BestMove);
+                return BestMove;
+            }
+        }
+        printf("Me X:%d\n",BestMove);
         return BestMove;
     }else
     {
@@ -362,22 +369,22 @@ int ChooseMove(int board[10][10],int Performance[10],int prev_move, int player){
                 }
             }
         }
-        // // must lose when no performance is greater than 0
-        // if(BScoreO == 1000){
-        //     for(int i =1; i <10;i++){
-        //         if(board[prev_move][i] == 2){
-        //             return i;
-        //         }
-        //     }
-        // }
+        // choose it when only performance left
+        if(Performance[0] == 1){
+            for(int i =1; i <10;i++){
+                if(Performance[i] > -1){return i;}
+            }
+        }
         // count the number of moves with the best performance of O
         // and store the moves
         for(int i =1; i <10;i++){
             if(Performance[i] ==  BScoreO){
                 ArrayOfBMove[i] = i;
                 ArrayOfBMove[0] ++;
-                // //prepare for the recursion
-                // Performance[i] = -1;
+                BestMove = i;
+                //prepare for the recursion
+                Performance[i] = -1;
+                Performance[0]--;
             }
         }
         // choose the one with most Os in next board
@@ -392,18 +399,25 @@ int ChooseMove(int board[10][10],int Performance[10],int prev_move, int player){
                 //having the most Os in next board but dont have ready to win situation
                 if(Count < Cal(board[i],1)){
                     Count = Cal(board[i],1);
-                    // if(isWon(board[i],0,2) != 1){
-                    BestMove = i;
-                    // }
+                    if(isWon(board[i],0,2) != 1){
+                        BestMove = i;
+                    }
                 }
                 board[prev_move][i] = 2;
             }
         }
-        printf("Me O:%d\n",BestMove);
+        
         //
-        // if( BestMove == 0){
-        //     return ChooseMove(board,Performance,prev_move,player);
-        // }
+        if( BestMove == 0){
+            if(Performance[0] > 0){
+                return ChooseMove(board,Performance,prev_move,player);
+            }
+            else{
+                printf("Me O:%d\n",BestMove);
+                return BestMove;
+            }
+        }
+        printf("Me O:%d\n",BestMove);
         return BestMove;
     } 
 }
