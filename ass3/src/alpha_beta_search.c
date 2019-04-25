@@ -10,14 +10,10 @@
 #ifndef min
     #define min(a,b)(((a)<(b))?(a):(b))
 #endif
+
+#include"BinomialHeapPQ.c"
 /*
 // Heuristic:
-//version2:
-1.had 3X(i):10
-2.had 2X(i): 1
-3.had 3O(i): -20
-4.had 2O(i): -2
-
 //version3:
 possible wins: X/O *100
 100 means X wins
@@ -291,140 +287,11 @@ int alphabeta(int board[10][10], int prev_move, int depth, int alpha, int beta, 
         return beta;
     }
 }
-int ChooseMove(int board[10][10],int Performance[10],int prev_move, int player){
-    int ArrayOfBMove[10] = {0,0,0,0,0,0,0,0,0,0};
-    int Count = 0;
-    int BestMove = 0;
-    if(player == 0){
-        int BScoreX = -1000;
-        // get the best performance of X
-        for(int i =1; i <10;i++){
-            if(Performance[i] > -1){
-                if(BScoreX < Performance[i]){
-                    BScoreX = Performance[i];
-                    BestMove = i;
-                }
-            }
-        }
-        printf("BS:%d\n",BScoreX);
-        // choose it when only performance left
-        if(Performance[0] == 1){
-            for(int i =1; i <10;i++){
-                if(Performance[i] > -1){return i;}
-            }
-        }
-        // count the number of moves with the best performance of X
-        // and store the moves
-        for(int i =1; i <10;i++){
-            if(Performance[i] ==  BScoreX){
-                ArrayOfBMove[i] = i;
-                ArrayOfBMove[0] ++;
-                BestMove = i;
-                //prepare for the recursion
-                Performance[i] = -1;
-                Performance[0] --;
-            }
-        }
-        // choose the one with most Xs in next board
-        for(int i=1;i<10;i++){
-            if(ArrayOfBMove[i] > 0){
-                // theoritcally, board[prev_move][i] = 2;
-                board[prev_move][i] = 0;
-                //if there are 3Xs
-                if(isWon(board[prev_move],0,3) == 1){
-                    return i;
-                }
-                //having the most Xs in next board but dont have ready to win situation
-                if(Count < Cal(board[i],0)){
-                    Count = Cal(board[i],0);
-                    if(isWon(board[i],1,2) != 1){
-                        BestMove = i;
-                    }
-                }
-                board[prev_move][i] = 2;
-            }
-        }
-        
-        //
-        if( BestMove == 0){
-            if(Performance[0] > 0){
-                return ChooseMove(board,Performance,prev_move,player);
-            }
-            else{
-                printf("Me X:%d\n",BestMove);
-                return BestMove;
-            }
-        }
-        printf("Me X:%d\n",BestMove);
-        return BestMove;
-    }else
-    {
-        int BScoreO = 1000;
-        // get the best performance of O
-        for(int i =1; i <10;i++){
-            if(Performance[i] > 0){
-                if(BScoreO > Performance[i]){
-                    BScoreO = Performance[i];
-                    BestMove = i;
-                }
-            }
-        }
-        // choose it when only performance left
-        if(Performance[0] == 1){
-            for(int i =1; i <10;i++){
-                if(Performance[i] > -1){return i;}
-            }
-        }
-        // count the number of moves with the best performance of O
-        // and store the moves
-        for(int i =1; i <10;i++){
-            if(Performance[i] ==  BScoreO){
-                ArrayOfBMove[i] = i;
-                ArrayOfBMove[0] ++;
-                BestMove = i;
-                //prepare for the recursion
-                Performance[i] = -1;
-                Performance[0]--;
-            }
-        }
-        // choose the one with most Os in next board
-        for(int i=1;i<10;i++){
-            if(ArrayOfBMove[i] > 0){
-                // theoritcally, board[prev_move][i] = 2;
-                board[prev_move][i] = 1;
-                //if there are 3Os
-                if(isWon(board[prev_move],1,3) == 1){
-                    return i;
-                }
-                //having the most Os in next board but dont have ready to win situation
-                if(Count < Cal(board[i],1)){
-                    Count = Cal(board[i],1);
-                    if(isWon(board[i],0,2) != 1){
-                        BestMove = i;
-                    }
-                }
-                board[prev_move][i] = 2;
-            }
-        }
-        
-        //
-        if( BestMove == 0){
-            if(Performance[0] > 0){
-                return ChooseMove(board,Performance,prev_move,player);
-            }
-            else{
-                printf("Me O:%d\n",BestMove);
-                return BestMove;
-            }
-        }
-        printf("Me O:%d\n",BestMove);
-        return BestMove;
-    } 
-}
 int getBestMove(int board[10][10], int prev_move, int depth, int player){
     int val;
     int PerformanceOfX[10] = {0,-1,-1,-1,-1,-1,-1,-1,-1,-1};
     int PerformanceOfO[10] = {0,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    BinomialHeap * PQ = newHeap();
     if(player == 0){// I am player X
         for(int i = 1; i< 10;i++){
             if(board[prev_move][i] == 2){
@@ -432,11 +299,27 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
                 val = alphabeta(board,i,depth,AL,BT,!player);
                 printf("%d:%d\n",i,val);
                 board[prev_move][i] = 2;
-                PerformanceOfX[i] = val;
-                PerformanceOfX[0]++;
+                Insert(PQ,val,i,0,0,0);
             }
         }
-        return ChooseMove(board,PerformanceOfX,prev_move,player);
+        for(int i = 1; i <10;i++){
+            if(PQ->smallestB == NULL){break;}
+            PerformanceOfX[i] = RemoveMin(PQ)->TaskName;
+            PerformanceOfX[0] ++;
+        }
+        if(PerformanceOfX[0]==1){
+            return PerformanceOfX[1];
+        }else{
+            //reversed visiting the array
+            for(int j= PerformanceOfX[0]; j>0 ;j--){
+                board[prev_move][PerformanceOfX[j]] = 0;
+                if(isWon(board[PerformanceOfX[j]],1,2)!=1){
+                    board[prev_move][PerformanceOfX[j]] = 2;
+                    return PerformanceOfX[j];
+                }
+            }
+            return PerformanceOfX[1];
+        }
     }else{ // I am player O
         for(int i = 1; i< 10;i++){
             if(board[prev_move][i] == 2){
@@ -444,11 +327,26 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
                 val = alphabeta(board,i,depth,AL,BT,!player);
                 printf("%d:%d\n",i,val);
                 board[prev_move][i] = 2;
-                PerformanceOfO[i] = val;
-                PerformanceOfO[0]++;
+                Insert(PQ,val,i,0,0,0);
             }
         }
-        return ChooseMove(board,PerformanceOfO,prev_move,player);
+        for(int i = 1; i <10;i++){
+            if(PQ->smallestB == NULL){break;}
+            PerformanceOfO[i] = RemoveMin(PQ)->TaskName;
+            PerformanceOfO[0] ++;
+        }
+        if(PerformanceOfO[0]==1){
+            return PerformanceOfO[1];
+        }else{
+            for(int j= 1;j<PerformanceOfO[0];j++){
+                board[prev_move][PerformanceOfO[j]] = 1;
+                if(isWon(board[PerformanceOfO[j]],0,2)!=1){
+                    board[prev_move][PerformanceOfO[j]] = 2;
+                    return PerformanceOfO[j];
+                }
+            }
+            return PerformanceOfX[1];
+        }
     }
 }
 
