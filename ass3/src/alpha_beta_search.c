@@ -173,6 +173,10 @@ int Eval(int subboard[10]){
         }
     }
 }
+int CalXs(int subboard[10]){
+    int count = 0;
+    return count;
+}
 
 /*
 //alpha beta search Algorithm:
@@ -237,73 +241,112 @@ int alphabeta(int board[10][10], int prev_move, int depth, int alpha, int beta, 
 }
 int getBestMove(int board[10][10], int prev_move, int depth, int player){
     int val;
-    int BM = 0;
-    // int X_array[10];
-    // int O_array[10];
-    // int BS = -1000;
-    if(player == 0){
-        int BS = -1000;
+    // int BM = 0;
+    int PerformanceOfX[10] = {0,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    int PerformanceOfO[10] = {0,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    if(player == 0){// I am player X
+        int BScoreofX = -1000;
+        int BMoveofX = 0;
+        int ArrayOfBMoveofX[10] = {0,0,0,0,0,0,0,0,0,0};
         for(int i = 1; i< 10;i++){
             if(board[prev_move][i] == 2){
                 board[prev_move][i] = 0;
-                val = alphabeta(board,i,depth,AL,BT,1);
-                // printf("x/o:%d\n",val);
+                val = alphabeta(board,i,depth,AL,BT,!player);
+                printf("%d:%d\n",i,val);
                 board[prev_move][i] = 2;
-                // X_array[i] = val;
-                if(val > BS){
-                    BS = val;
-                    BM = i;
+                PerformanceOfX[i] = val;
+                // get the best performance of X
+                if(BScoreofX < val){
+                    BScoreofX = val;
+                    BMoveofX = i;
                 }
-                // printf("%d\n",BM);
             }
         }
-    }else
-    {
-        int BS = 1000;
+        // count the number of moves with the best performance of X
+        // and store the moves
+        for(int i =1; i <10;i++){
+            if(PerformanceOfX[i] ==  BScoreofX){
+                ArrayOfBMoveofX[i] = i;
+                ArrayOfBMoveofX[0] ++;
+            }
+        }
+        // if there are multiple
+        if(ArrayOfBMoveofX[0] > 1){
+            //choose the move leading to the worst performance of O in next board
+            int WorstPofO = -1000;
+            int WorstMofO = 0;
+            for(int i=1;i<10;i++){
+                if(ArrayOfBMoveofX[i] > 0){
+                    // theoritcally, board[prev_move][i] = 2;
+                    board[prev_move][i] = 0;
+                    PerformanceOfO[i] = Eval(board[i]);
+                    PerformanceOfO[0] ++;
+                    board[prev_move][i] = 2;
+                    if(WorstPofO < PerformanceOfO[i]){
+                        WorstPofO = PerformanceOfO[i];
+                        WorstMofO = i;
+                    }
+                }
+            }
+            printf("Me X:%d\n",WorstMofO);
+            return WorstMofO;
+        }else
+        {   
+            printf("Me X:%d\n",BMoveofX);
+            return BMoveofX;
+        }
+    }else{ // I am player O
+        int BScoreofO = 1000;
+        int BMoveofO = 0;
+        int ArrayOfBMoveofO[10] = {0,0,0,0,0,0,0,0,0,0};
         for(int i = 1; i< 10;i++){
             if(board[prev_move][i] == 2){
                 board[prev_move][i] = 1;
-                val = alphabeta(board,i,depth,AL,BT,0);
+                val = alphabeta(board,i,depth,AL,BT,!player);
+                printf("%d:%d\n",i,val);
                 board[prev_move][i] = 2;
-                // X_array[i] = val;
-                if(val < BS){
-                    BS = val;
-                    BM = i;
+                PerformanceOfO[i] = val;
+                // get the best performance of O
+                if(BScoreofO > val){
+                    BScoreofO = val;
+                    BMoveofO = i;
                 }
-                // printf("%d\n",BM);
             }
         }
+        // count the number of moves with the best performance of O
+        // and store the moves
+        for(int i =1; i <10;i++){
+            if(PerformanceOfO[i] ==  BScoreofO){
+                ArrayOfBMoveofO[i] = i;
+                ArrayOfBMoveofO[0] ++;
+            }
+        }
+        // if there are multiple
+        if(ArrayOfBMoveofO[0] > 1){
+            //choose the move leading to the worst performance of X in next board
+            int WorstPofX = 1000;
+            int WorstMofX = 0;
+            for(int i=1;i<10;i++){
+                if(ArrayOfBMoveofO[i] > 0){
+                    // theoritcally, board[prev_move][i] = 2;
+                    board[prev_move][i] = 1;
+                    PerformanceOfX[i] = Eval(board[i]);
+                    PerformanceOfX[0] ++;
+                    board[prev_move][i] = 2;
+                    if(WorstPofX > PerformanceOfX[i]){
+                        WorstPofX = PerformanceOfX[i];
+                        WorstMofX = i;
+                    }
+                }
+            }
+            printf("Me O:%d\n",WorstMofX);
+            return WorstMofX;
+        }else
+        {   
+            printf("Me O:%d\n",BMoveofO);
+            return BMoveofO;
+        }
     }
-    
-    // //watch on next move
-    // for(int i = 1; i <10; i ++){
-    //     if(board[prev_move][i] == 2){
-    //         if(X_array[i] != 0){
-    //             board[prev_move][i] = 0;
-    //             //if next move is that I win, then choose first.
-    //             if(Eval(board[prev_move])==10){
-    //                 board[prev_move][i] = 2;
-    //                 return i;
-    //             }else{
-    //                 // choose the worst next next move for the opponent
-    //                 int worst_oppent = -10000;
-    //                 for(int j = 1; j<10;j++){
-    //                     if(board[i][j] == 2){
-    //                         board[i][j] = 1;
-    //                         worst_oppent = max(worst_oppent, Eval(board[i]));
-    //                         board[i][j] = 2;
-    //                     }
-    //                 }
-    //                 board[prev_move][i] = 2;
-    //                 if(BS > X_array[i] - worst_oppent){
-    //                     BS = X_array[i] - worst_oppent;
-    //                     BM = i;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-    return BM;
 }
 
 
