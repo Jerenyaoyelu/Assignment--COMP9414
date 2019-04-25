@@ -15,7 +15,7 @@
 #include "alpha_beta_search.c"
 
 #define MAX_MOVE 81
-#define DEPTH 4
+#define DEPTH 6
 
 int board[10][10];
 int move[MAX_MOVE+1];

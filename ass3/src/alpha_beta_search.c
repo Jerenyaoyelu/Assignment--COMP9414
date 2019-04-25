@@ -166,7 +166,11 @@ int Eval(int subboard[10]){
         // printf("x:%d, o: %d\n",X_wins,O_wins);
         // int temp = ceil(X_wins*100/(O_wins+X_wins));
         // printf("x/o:%d\n",temp);
-        return ceil(X_wins*100/(O_wins+X_wins));
+        if(X_wins == 0 && O_wins == 0){
+            return 50;
+        }else{
+            return ceil(X_wins*100/(O_wins+X_wins));
+        }
     }
 }
 
