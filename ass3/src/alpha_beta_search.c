@@ -1,11 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#define H2Os -2
-#define H3Xs 10
-#define H2Xs 1
-#define BASIC_SCORE 0
-#define H3Os -10
+#include<math.h>
 #define AL -20000000
 #define BT 20000000
 #ifndef max
@@ -21,10 +17,16 @@
 2.had 2X(i): 1
 3.had 3O(i): -20
 4.had 2O(i): -2
+
+//version3:
+possible wins: X/O *100
+100 means X wins
+0 means O wins
 */
-//Eval version 2
+//Eval version 3
 int Eval(int subboard[10]){
-    int value = 0;
+    int X_wins = 0;
+    int O_wins = 0;
     if(
         //columns
         (subboard[1] == 0 && subboard[4] == 0 && subboard[7] == 0)||
@@ -37,10 +39,7 @@ int Eval(int subboard[10]){
         //diagnoses
         (subboard[1] == 0 && subboard[5] == 0 && subboard[9] == 0)||
         (subboard[3] == 0 && subboard[5] == 0 && subboard[7] == 0)
-    ){
-        value = value + H3Xs;
-        return value;
-    }
+    ){return 100;}
     else if(
         //columns
         (subboard[1] == 1 && subboard[4] == 1 && subboard[7] == 1)||
@@ -53,103 +52,122 @@ int Eval(int subboard[10]){
         //diagnoses
         (subboard[1] == 1 && subboard[5] == 1 && subboard[9] == 1)||
         (subboard[3] == 1 && subboard[5] == 1 && subboard[7] == 1)
-    ){
-        value = value + H3Os;
-        return value;
-    }
-    // rows
-    for(int i = 1; i<10;i = i+3){
-        if(subboard[i] != 1 && subboard[i+1] != 1 && subboard[i+2] != 1){
-            if(
+    ){return 0;}
+    else{
+        // rows
+        for(int i = 1; i<10;i = i+3){
+            if(// having 2 Xs
                 (subboard[i] ==0 && subboard[i+1] ==0 && subboard[i+2] ==2)||
                 (subboard[i] ==2 && subboard[i+1] ==0 && subboard[i+2] ==0)||
                 (subboard[i] ==0 && subboard[i+1] ==2 && subboard[i+2] ==0)
-            ){value = value + H2Xs;}
-            if(
+            ){X_wins++;}
+            if(// having 1 X
                 (subboard[i] ==0 && subboard[i+1] ==2 && subboard[i+2] ==2)||
                 (subboard[i] ==2 && subboard[i+1] ==0 && subboard[i+2] ==2)||
                 (subboard[i] ==2 && subboard[i+1] ==2 && subboard[i+2] ==0)
-            ){value = value + BASIC_SCORE;}
-        }
-    }
-    //columns
-    for(int i = 1; i<4;i++){
-        if(subboard[i] != 1 && subboard[i+3] != 1 && subboard[i+6] != 1){
-            if(
-                (subboard[i] ==0 && subboard[i+3] ==0 && subboard[i+6] ==2)||
-                (subboard[i] ==2 && subboard[i+3] ==0 && subboard[i+6] ==0)||
-                (subboard[i] ==0 && subboard[i+3] ==2 && subboard[i+6] ==0)
-            ){value = value + H2Xs;}
-            if(
-                (subboard[i] ==0 && subboard[i+3] ==2 && subboard[i+6] ==2)||
-                (subboard[i] ==2 && subboard[i+3] ==0 && subboard[i+6] ==2)||
-                (subboard[i] ==2 && subboard[i+3] ==2 && subboard[i+6] ==0)
-            ){value = value + BASIC_SCORE;}
-        }
-    }
-    //diagnoses
-   if(subboard[1] != 1 && subboard[5] != 1 && subboard[9] != 1){
-        if(
-            (subboard[1] ==0 && subboard[5] ==0 && subboard[9] ==2)||
-            (subboard[1] ==2 && subboard[5] ==0 && subboard[9] ==0)||
-            (subboard[1] ==0 && subboard[5] ==2 && subboard[9] ==0)
-        ){value = value + H2Xs;}
-        if(
-            (subboard[1] ==0 && subboard[5] ==2 && subboard[9] ==2)||
-            (subboard[1] ==2 && subboard[5] ==0 && subboard[9] ==2)||
-            (subboard[1] ==2 && subboard[5] ==2 && subboard[9] ==0)
-        ){value = value + BASIC_SCORE;}
-    }
-    if(subboard[3] != 1 && subboard[5] != 1 && subboard[7] != 1){
-        if(
-            (subboard[3] ==0 && subboard[5] ==0 && subboard[7] ==2)||
-            (subboard[3] ==2 && subboard[5] ==0 && subboard[7] ==0)||
-            (subboard[3] ==0 && subboard[5] ==2 && subboard[7] ==0)
-        ){value = value + H2Xs;}
-        if(
-            (subboard[3] ==0 && subboard[5] ==2 && subboard[7] ==2)||
-            (subboard[3] ==2 && subboard[5] ==0 && subboard[7] ==2)||
-            (subboard[3] ==2 && subboard[5] ==2 && subboard[7] ==0)
-        ){value = value + BASIC_SCORE;}
-    }
-
-    // Making 2 Os
-    // rows
-    for(int i = 1; i<10;i = i+3){
-        if(subboard[i] != 1 && subboard[i+1] != 1 && subboard[i+2] != 1){
-            if(
+            ){X_wins++;}
+            if(// having 2 Os
                 (subboard[i] ==1 && subboard[i+1] ==1 && subboard[i+2] ==2)||
                 (subboard[i] ==2 && subboard[i+1] ==1 && subboard[i+2] ==1)||
                 (subboard[i] ==1 && subboard[i+1] ==2 && subboard[i+2] ==1)
-            ){value = value + H2Os;}
+            ){X_wins++;}
+            if(// having 1 O
+                (subboard[i] ==1 && subboard[i+1] ==2 && subboard[i+2] ==2)||
+                (subboard[i] ==2 && subboard[i+1] ==1 && subboard[i+2] ==2)||
+                (subboard[i] ==2 && subboard[i+1] ==2 && subboard[i+2] ==1)
+            ){X_wins++;}
+            // empty row
+            if(subboard[i] ==2 && subboard[i+1] ==2 && subboard[i+2] == 2){
+                X_wins++;
+                O_wins++;
+            }
         }
-    }
-    //columns
-    for(int i = 1; i<4;i++){
-        if(subboard[i] != 1 && subboard[i+3] != 1 && subboard[i+6] != 1){
-            if(
+        //columns
+        for(int i = 1; i<4;i++){
+            if(// having 2 Xs
+                (subboard[i] ==0 && subboard[i+3] ==0 && subboard[i+6] ==2)||
+                (subboard[i] ==2 && subboard[i+3] ==0 && subboard[i+6] ==0)||
+                (subboard[i] ==0 && subboard[i+3] ==2 && subboard[i+6] ==0)
+            ){X_wins++;}
+            if(// having 1 X
+                (subboard[i] ==0 && subboard[i+3] ==2 && subboard[i+6] ==2)||
+                (subboard[i] ==2 && subboard[i+3] ==0 && subboard[i+6] ==2)||
+                (subboard[i] ==2 && subboard[i+3] ==2 && subboard[i+6] ==0)
+            ){X_wins++;}
+            if(// having 2 Os
                 (subboard[i] ==1 && subboard[i+3] ==1 && subboard[i+6] ==2)||
                 (subboard[i] ==2 && subboard[i+3] ==1 && subboard[i+6] ==1)||
                 (subboard[i] ==1 && subboard[i+3] ==2 && subboard[i+6] ==1)
-            ){value = value + H2Os;}
+            ){X_wins++;}
+            if(// having 1 O
+                (subboard[i] ==1 && subboard[i+3] ==2 && subboard[i+6] ==2)||
+                (subboard[i] ==2 && subboard[i+3] ==1 && subboard[i+6] ==2)||
+                (subboard[i] ==2 && subboard[i+3] ==2 && subboard[i+6] ==1)
+            ){X_wins++;}
+            // empty row
+            if(subboard[i] ==2 && subboard[i+1] ==2 && subboard[i+2] == 2){
+                X_wins++;
+                O_wins++;
+            }
         }
-    }
-    //diagnoses
-   if(subboard[1] != 1 && subboard[5] != 1 && subboard[9] != 1){
-        if(
+        //diagnoses
+        if(// having 2 Xs
+            (subboard[1] ==0 && subboard[5] ==0 && subboard[9] ==2)||
+            (subboard[1] ==2 && subboard[5] ==0 && subboard[9] ==0)||
+            (subboard[1] ==0 && subboard[5] ==2 && subboard[9] ==0)
+        ){X_wins++;}
+        if(//having 1 X
+            (subboard[1] ==0 && subboard[5] ==2 && subboard[9] ==2)||
+            (subboard[1] ==2 && subboard[5] ==0 && subboard[9] ==2)||
+            (subboard[1] ==2 && subboard[5] ==2 && subboard[9] ==0)
+        ){X_wins++;}
+        if(// having 2 Xs
+            (subboard[3] ==0 && subboard[5] ==0 && subboard[7] ==2)||
+            (subboard[3] ==2 && subboard[5] ==0 && subboard[7] ==0)||
+            (subboard[3] ==0 && subboard[5] ==2 && subboard[7] ==0)
+        ){X_wins++;}
+        if(// having 1 X
+            (subboard[3] ==0 && subboard[5] ==2 && subboard[7] ==2)||
+            (subboard[3] ==2 && subboard[5] ==0 && subboard[7] ==2)||
+            (subboard[3] ==2 && subboard[5] ==2 && subboard[7] ==0)
+        ){X_wins++;}
+        if(// having 2 Os
             (subboard[1] ==1 && subboard[5] ==1 && subboard[9] ==2)||
             (subboard[1] ==2 && subboard[5] ==1 && subboard[9] ==1)||
             (subboard[1] ==1 && subboard[5] ==2 && subboard[9] ==1)
-        ){value = value + H2Os;}
-    }
-    if(subboard[3] != 1 && subboard[5] != 1 && subboard[7] != 1){
-        if(
+        ){O_wins++;}
+        if(//having 1 O
+            (subboard[1] ==1 && subboard[5] ==2 && subboard[9] ==2)||
+            (subboard[1] ==2 && subboard[5] ==1 && subboard[9] ==2)||
+            (subboard[1] ==2 && subboard[5] ==2 && subboard[9] ==1)
+        ){O_wins++;}
+        if(// having 2 Os
             (subboard[3] ==1 && subboard[5] ==1 && subboard[7] ==2)||
             (subboard[3] ==2 && subboard[5] ==1 && subboard[7] ==1)||
             (subboard[3] ==1 && subboard[5] ==2 && subboard[7] ==1)
-        ){value = value + H2Os;}
+        ){O_wins++;}
+        if(// having 1 O
+            (subboard[3] ==1 && subboard[5] ==2 && subboard[7] ==2)||
+            (subboard[3] ==2 && subboard[5] ==1 && subboard[7] ==2)||
+            (subboard[3] ==2 && subboard[5] ==2 && subboard[7] ==1)
+        ){O_wins++;}
+        if(//empty
+            subboard[1] ==2 && subboard[5] ==2 && subboard[9] ==2
+        ){
+            X_wins++;
+            O_wins++;
+        }
+        if(//empty
+            subboard[3] ==2 && subboard[5] ==2 && subboard[7] ==2
+        ){
+            X_wins++;
+            O_wins++;
+        }
+        // printf("x:%d, o: %d\n",X_wins,O_wins);
+        // int temp = ceil(X_wins*100/(O_wins+X_wins));
+        // printf("x/o:%d\n",temp);
+        return ceil(X_wins*100/(O_wins+X_wins));
     }
-    return value;
 }
 
 /*
@@ -189,6 +207,8 @@ int alphabeta(int board[10][10], int prev_move, int depth, int alpha, int beta, 
             if(board[prev_move][i] == 2){
                 board[prev_move][i] = 0;
                 alpha = max(alpha,alphabeta(board,i,depth-1,alpha,beta,!Player));
+                // printf("x/o:%d\n",alpha);
+                // printf("%d\n",alpha);
                 board[prev_move][i] = 2;
                 if (alpha >= beta){
                     return alpha;
@@ -223,13 +243,14 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
             if(board[prev_move][i] == 2){
                 board[prev_move][i] = 0;
                 val = alphabeta(board,i,depth,AL,BT,1);
+                // printf("x/o:%d\n",val);
                 board[prev_move][i] = 2;
                 // X_array[i] = val;
                 if(val > BS){
                     BS = val;
                     BM = i;
                 }
-                printf("%d\n",val);
+                // printf("%d\n",BM);
             }
         }
     }else
@@ -245,7 +266,7 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
                     BS = val;
                     BM = i;
                 }
-                printf("%d\n",val);
+                // printf("%d\n",BM);
             }
         }
     }
