@@ -89,7 +89,7 @@ void agent_start( int this_player )
 int agent_second_move( int board_num, int prev_move )
 {
   int this_move;
-  // int *val;
+  int BM;
   move[0] = board_num;
   move[1] = prev_move;
   board[board_num][prev_move] = !player;
@@ -98,7 +98,9 @@ int agent_second_move( int board_num, int prev_move )
     //my code goes here
     // val = alphabeta(board[prev_move],-1,DEPTH,-2000,2000,player);
     // this_move = val[0];
-    this_move = 1 + random()% 9;
+    //my code goes here
+    BM = getBestMove(board,prev_move,DEPTH,player);
+    this_move = BM;
   } while( board[prev_move][this_move] != EMPTY );
   move[m] = this_move;
   board[prev_move][this_move] = player;
@@ -115,7 +117,7 @@ int agent_third_move(
                     )
 {
   int this_move;
-  // int *val;
+  int BM;
   move[0] = board_num;
   move[1] = first_move;
   move[2] = prev_move;
@@ -126,7 +128,9 @@ int agent_third_move(
     // my code goes here
     // val = alphabeta(board[prev_move],-1,DEPTH,-2000,2000,player);
     // this_move = val[0];
-    this_move = 1 + random()% 9;
+    //my code goes here
+    BM = getBestMove(board,prev_move,DEPTH,player);
+    this_move = BM;
   } while( board[prev_move][this_move] != EMPTY );
   move[m] = this_move;
   board[move[m-1]][this_move] = player;

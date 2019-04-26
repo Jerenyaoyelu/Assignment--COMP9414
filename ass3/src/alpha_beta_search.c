@@ -226,6 +226,64 @@ int isWon(int subboard[10],int target, int mode){
     }
     return 0;
 }
+int Blocking(int subboard[10],int target, int position){
+    //diagnoses
+    if(
+        (subboard[1] ==target && subboard[5] ==target && subboard[9] ==2)&&
+        position == 9
+    ){return 1;}
+    if(
+        (subboard[1] ==2 && subboard[5] ==target && subboard[9] ==target)&&
+        position == 1
+    ){return 1;}
+    if(
+        (subboard[1] ==target && subboard[5] ==2 && subboard[9] ==target)&&
+        position == 5
+    ){return 1;}
+    if(
+        (subboard[3] ==target && subboard[5] ==target && subboard[7] ==2)&&
+        position == 7
+    ){return 1;}
+    if(
+        (subboard[3] ==2 && subboard[5] ==target && subboard[7] ==target)&&
+        position == 3
+    ){return 1;}
+    if(
+        (subboard[3] ==target && subboard[5] ==2 && subboard[7] ==target)&&
+        position == 5
+    ){return 1;}
+    //rows
+    for(int i = 1; i<10;i = i+3){
+        if(
+            (subboard[i] ==target && subboard[i+1] ==target && subboard[i+2] ==2) && 
+            position == i+2
+        ){return 1;}
+        if(
+            (subboard[i] ==2 && subboard[i+1] ==target && subboard[i+2] ==target) &&
+            position == i
+        ){return 1;}
+        if(
+            (subboard[i] ==target && subboard[i+1] ==2 && subboard[i+2] ==target)&&
+            position == i+1
+        ){return 1;}
+    }
+    //columns
+    for(int i = 1; i<4;i++){
+        if(
+            (subboard[i] ==target && subboard[i+3] ==target && subboard[i+6] ==2)&&
+            position == i+6
+        ){return 1;}
+        if(
+            (subboard[i] ==2 && subboard[i+3] ==target && subboard[i+6] ==target)&&
+            position == i
+        ){return 1;}
+        if(
+            (subboard[i] ==target && subboard[i+3] ==2 && subboard[i+6] ==target)&&
+            position == i+3
+        ){return 1;}
+    }
+    return 0;
+}
 /*
 //alpha beta search Algorithm:
 function alphabeta( node, depth, α, β )
@@ -262,7 +320,7 @@ int alphabeta(int board[10][10], int prev_move, int depth, int alpha, int beta, 
         for (int i = 1; i <10;i++){
             if(board[prev_move][i] == 2){
                 board[prev_move][i] = 0;
-                alpha = max(alpha,alphabeta(board,i,depth-1,alpha,beta,!Player));
+                alpha = max(alpha,alphabeta(board,prev_move,depth-1,alpha,beta,!Player));
                 // printf("x/o:%d\n",alpha);
                 // printf("%d\n",alpha);
                 board[prev_move][i] = 2;
@@ -277,7 +335,7 @@ int alphabeta(int board[10][10], int prev_move, int depth, int alpha, int beta, 
         for (int i = 1; i <10;i++){
             if(board[prev_move][i] == 2){
                 board[prev_move][i] = 1;
-                beta = min(beta, alphabeta(board,i,depth-1,alpha,beta,!Player));
+                beta = min(beta, alphabeta(board,prev_move,depth-1,alpha,beta,!Player));
                 board[prev_move][i] = 2;
                 if (alpha >= beta){
                     return beta;
@@ -308,16 +366,36 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
             PerformanceOfX[0] ++;
         }
         if(PerformanceOfX[0]==1){
+            printf("1X\n");
             return PerformanceOfX[1];
         }else{
             //reversed visiting the array
             for(int j= PerformanceOfX[0]; j>0 ;j--){
+                // if win after this move, then choose it first
+                //otherwise, if this move bolcks, and dont lose in next board, then choose it
                 board[prev_move][PerformanceOfX[j]] = 0;
-                if(isWon(board[PerformanceOfX[j]],1,2)!=1){
+                // win at this step
+                if(isWon(board[prev_move],0,3) == 1){
                     board[prev_move][PerformanceOfX[j]] = 2;
                     return PerformanceOfX[j];
+                }else{
+                    //blcking(but not really blocking)
+                    board[prev_move][PerformanceOfX[j]] = 2;
+                    if(Blocking(board[prev_move],1,PerformanceOfX[j]) == 1 && isWon(board[PerformanceOfX[j]],1,3) != 1){
+                        printf("bb X\n");
+                        return PerformanceOfX[j];
+                    }else{
+                        board[prev_move][PerformanceOfX[j]] = 0;
+                        if(isWon(board[PerformanceOfX[j]],1,2)!=1){
+                            board[prev_move][PerformanceOfX[j]] = 2;
+                            printf("2X\n");
+                            return PerformanceOfX[j];
+                        }
+                        board[prev_move][PerformanceOfX[j]] = 2;
+                    }
                 }
             }
+            printf("3X\n");
             return PerformanceOfX[1];
         }
     }else{ // I am player O
@@ -336,15 +414,31 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
             PerformanceOfO[0] ++;
         }
         if(PerformanceOfO[0]==1){
+            printf("O\n");
             return PerformanceOfO[1];
         }else{
             for(int j= 1;j<PerformanceOfO[0];j++){
                 board[prev_move][PerformanceOfO[j]] = 1;
-                if(isWon(board[PerformanceOfO[j]],0,2)!=1){
+                if(isWon(board[prev_move],1,3)==1){
                     board[prev_move][PerformanceOfO[j]] = 2;
                     return PerformanceOfO[j];
+                }else{
+                    board[prev_move][PerformanceOfO[j]] = 2;
+                    if(Blocking(board[prev_move],0,PerformanceOfO[j])==1 && isWon(board[PerformanceOfO[j]],0,3)!=1){
+                        return PerformanceOfO[j];
+                    }else
+                    {   
+                        board[prev_move][PerformanceOfO[j]] = 1;
+                        if(isWon(board[PerformanceOfO[j]],0,2)!=1){
+                            board[prev_move][PerformanceOfO[j]] = 2;
+                            printf("O\n");
+                            return PerformanceOfO[j];
+                        }
+                        board[prev_move][PerformanceOfO[j]] = 2;   
+                    }
                 }
             }
+            printf("O\n");
             return PerformanceOfX[1];
         }
     }
