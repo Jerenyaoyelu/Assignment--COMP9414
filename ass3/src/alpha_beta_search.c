@@ -226,6 +226,67 @@ int isWon(int subboard[10],int target, int mode){
     }
     return 0;
 }
+
+// int Blocking(int subboard[10],int target, int position){
+//     //diagnoses
+//     if(
+//         (subboard[1] ==target && subboard[5] ==2 && subboard[9] ==2)&&
+//         position == 5
+//     ){return 1;}
+//     if(
+//         (subboard[1] ==2 && subboard[5] ==target && subboard[9] ==2)&&
+//         (position == 1||position == 9)
+//     ){return 1;}
+//     if(
+//         (subboard[1] ==2 && subboard[5] ==2 && subboard[9] ==target)&&
+//         position == 5
+//     ){return 1;}
+//     if(
+//         (subboard[3] ==target && subboard[5] ==2 && subboard[7] ==2)&&
+//         position == 5
+//     ){return 1;}
+//     if(
+//         (subboard[3] ==2 && subboard[5] ==target && subboard[7] ==2)&&
+//         (position == 3 || position == 7)
+//     ){return 1;}
+//     if(
+//         (subboard[3] ==2 && subboard[5] ==2 && subboard[7] ==target)&&
+//         position == 5
+//     ){return 1;}
+//     //rows
+//     for(int i = 1; i<10;i = i+3){
+//         if(
+//             (subboard[i] ==target && subboard[i+1] ==2 && subboard[i+2] ==2) && 
+//             position == i+1
+//         ){return 1;}
+//         if(
+//             (subboard[i] ==2 && subboard[i+1] ==target && subboard[i+2] ==2) &&
+//             (position == i || position == i+2)
+//         ){return 1;}
+//         if(
+//             (subboard[i] ==2 && subboard[i+1] ==2 && subboard[i+2] ==target)&&
+//             position == i+1
+//         ){return 1;}
+//     }
+//     //columns
+//     for(int i = 1; i<4;i++){
+//         if(
+//             (subboard[i] ==target && subboard[i+3] ==2 && subboard[i+6] ==2)&&
+//             position == i+3
+//         ){return 1;}
+//         if(
+//             (subboard[i] ==2 && subboard[i+3] ==target && subboard[i+6] ==2)&&
+//             (position == i ||position == i+6)
+//         ){return 1;}
+//         if(
+//             (subboard[i] ==2 && subboard[i+3] ==2 && subboard[i+6] ==target)&&
+//             position == i+3
+//         ){return 1;}
+//     }
+//     return 0;
+// }
+
+
 int Blocking(int subboard[10],int target, int position){
     //diagnoses
     if(
@@ -349,7 +410,9 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
     int val;
     int PerformanceOfX[10] = {0,-1,-1,-1,-1,-1,-1,-1,-1,-1};
     int PerformanceOfO[10] = {0,-1,-1,-1,-1,-1,-1,-1,-1,-1};
-    BinomialHeap * PQ = newHeap();
+    BinomialHeap * PQ1 = newHeap();
+    BinomialHeap * PQ2 = newHeap();
+    BinomialHeap * PQ3 = newHeap();
     if(player == 0){// I am player X
         for(int i = 1; i< 10;i++){
             if(board[prev_move][i] == 2){
@@ -357,14 +420,37 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
                 val = alphabeta(board,i,depth,AL,BT,!player);
                 printf("%d:%d\n",i,val);
                 board[prev_move][i] = 2;
-                Insert(PQ,val,i,0,0,0);
+                //insert with priority as the key
+                // priority 1: 5
+                // priority 2: 1,3,7,9
+                // priority 3: 2,4,6,8
+                // sort with val as the key in every priority
+                if(i == 5){
+                    Insert(PQ1,val,i,0,0,0);
+                }else if(i % 2 == 0){
+                    Insert(PQ3,val,i,0,0,0);
+                }else{
+                    Insert(PQ2,val,i,0,0,0);
+                }
             }
         }
+        //sort all the moves in a val first in an incresing order and then priority in an incresing order
         for(int i = 1; i <10;i++){
-            if(PQ->smallestB == NULL){break;}
-            PerformanceOfX[i] = RemoveMin(PQ)->TaskName;
+            if(PQ3->smallestB == NULL){break;}
+            PerformanceOfX[i] = RemoveMin(PQ3)->TaskName;
             PerformanceOfX[0] ++;
         }
+        for(int i = PerformanceOfX[0]+1; i <10;i++){
+            if(PQ2->smallestB == NULL){break;}
+            PerformanceOfX[i] = RemoveMin(PQ2)->TaskName;
+            PerformanceOfX[0] ++;
+        }
+        for(int i = PerformanceOfX[0]+1; i <10;i++){
+            if(PQ1->smallestB == NULL){break;}
+            PerformanceOfX[i] = RemoveMin(PQ1)->TaskName;
+            PerformanceOfX[0] ++;
+        }
+
         if(PerformanceOfX[0]==1){
             printf("1X\n");
             return PerformanceOfX[1];
@@ -381,7 +467,7 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
                 }else{
                     //blcking(but not really blocking)
                     board[prev_move][PerformanceOfX[j]] = 2;
-                    if(Blocking(board[prev_move],1,PerformanceOfX[j]) == 1 && isWon(board[PerformanceOfX[j]],1,3) != 1){
+                    if(Blocking(board[prev_move],1,PerformanceOfX[j]) == 1 && isWon(board[PerformanceOfX[j]],1,2) != 1){
                         printf("bb X\n");
                         return PerformanceOfX[j];
                     }else{
@@ -405,14 +491,32 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
                 val = alphabeta(board,i,depth,AL,BT,!player);
                 printf("%d:%d\n",i,val);
                 board[prev_move][i] = 2;
-                Insert(PQ,val,i,0,0,0);
+                if(i == 5){
+                    Insert(PQ1,val,i,0,0,0);
+                }else if(i % 2 == 0){
+                    Insert(PQ3,val,i,0,0,0);
+                }else{
+                    Insert(PQ2,val,i,0,0,0);
+                }
             }
         }
+        //sort all the moves in a val first in an incresing order and then priority in an incresing order
         for(int i = 1; i <10;i++){
-            if(PQ->smallestB == NULL){break;}
-            PerformanceOfO[i] = RemoveMin(PQ)->TaskName;
+            if(PQ3->smallestB == NULL){break;}
+            PerformanceOfO[i] = RemoveMin(PQ3)->TaskName;
             PerformanceOfO[0] ++;
         }
+        for(int i = PerformanceOfO[0]+1; i <10;i++){
+            if(PQ2->smallestB == NULL){break;}
+            PerformanceOfO[i] = RemoveMin(PQ2)->TaskName;
+            PerformanceOfO[0] ++;
+        }
+        for(int i = PerformanceOfO[0]+1; i <10;i++){
+            if(PQ1->smallestB == NULL){break;}
+            PerformanceOfO[i] = RemoveMin(PQ1)->TaskName;
+            PerformanceOfO[0] ++;
+        }
+
         if(PerformanceOfO[0]==1){
             printf("O\n");
             return PerformanceOfO[1];
@@ -424,7 +528,7 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
                     return PerformanceOfO[j];
                 }else{
                     board[prev_move][PerformanceOfO[j]] = 2;
-                    if(Blocking(board[prev_move],0,PerformanceOfO[j])==1 && isWon(board[PerformanceOfO[j]],0,3)!=1){
+                    if(Blocking(board[prev_move],0,PerformanceOfO[j])==1 && isWon(board[PerformanceOfO[j]],0,2)!=1){
                         return PerformanceOfO[j];
                     }else
                     {   
