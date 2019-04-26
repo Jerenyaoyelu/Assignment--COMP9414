@@ -66,12 +66,12 @@ int Eval(int subboard[10]){
                 (subboard[i] ==1 && subboard[i+1] ==1 && subboard[i+2] ==2)||
                 (subboard[i] ==2 && subboard[i+1] ==1 && subboard[i+2] ==1)||
                 (subboard[i] ==1 && subboard[i+1] ==2 && subboard[i+2] ==1)
-            ){X_wins++;}
+            ){O_wins++;}
             if(// having 1 O
                 (subboard[i] ==1 && subboard[i+1] ==2 && subboard[i+2] ==2)||
                 (subboard[i] ==2 && subboard[i+1] ==1 && subboard[i+2] ==2)||
                 (subboard[i] ==2 && subboard[i+1] ==2 && subboard[i+2] ==1)
-            ){X_wins++;}
+            ){O_wins++;}
             // empty row
             if(subboard[i] ==2 && subboard[i+1] ==2 && subboard[i+2] == 2){
                 X_wins++;
@@ -94,12 +94,12 @@ int Eval(int subboard[10]){
                 (subboard[i] ==1 && subboard[i+3] ==1 && subboard[i+6] ==2)||
                 (subboard[i] ==2 && subboard[i+3] ==1 && subboard[i+6] ==1)||
                 (subboard[i] ==1 && subboard[i+3] ==2 && subboard[i+6] ==1)
-            ){X_wins++;}
+            ){O_wins++;}
             if(// having 1 O
                 (subboard[i] ==1 && subboard[i+3] ==2 && subboard[i+6] ==2)||
                 (subboard[i] ==2 && subboard[i+3] ==1 && subboard[i+6] ==2)||
                 (subboard[i] ==2 && subboard[i+3] ==2 && subboard[i+6] ==1)
-            ){X_wins++;}
+            ){O_wins++;}
             // empty row
             if(subboard[i] ==2 && subboard[i+1] ==2 && subboard[i+2] == 2){
                 X_wins++;
@@ -381,7 +381,7 @@ int alphabeta(int board[10][10], int prev_move, int depth, int alpha, int beta, 
         for (int i = 1; i <10;i++){
             if(board[prev_move][i] == 2){
                 board[prev_move][i] = 0;
-                alpha = max(alpha,alphabeta(board,prev_move,depth-1,alpha,beta,!Player));
+                alpha = max(alpha,alphabeta(board,i,depth-1,alpha,beta,!Player));
                 // printf("x/o:%d\n",alpha);
                 // printf("%d\n",alpha);
                 board[prev_move][i] = 2;
@@ -396,7 +396,7 @@ int alphabeta(int board[10][10], int prev_move, int depth, int alpha, int beta, 
         for (int i = 1; i <10;i++){
             if(board[prev_move][i] == 2){
                 board[prev_move][i] = 1;
-                beta = min(beta, alphabeta(board,prev_move,depth-1,alpha,beta,!Player));
+                beta = min(beta, alphabeta(board,i,depth-1,alpha,beta,!Player));
                 board[prev_move][i] = 2;
                 if (alpha >= beta){
                     return beta;
@@ -482,7 +482,7 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
                 }
             }
             printf("3X\n");
-            return PerformanceOfX[1];
+            return PerformanceOfX[PerformanceOfX[0]];
         }
     }else{ // I am player O
         for(int i = 1; i< 10;i++){
@@ -543,7 +543,7 @@ int getBestMove(int board[10][10], int prev_move, int depth, int player){
                 }
             }
             printf("O\n");
-            return PerformanceOfX[1];
+            return PerformanceOfO[PerformanceOfO[0]];
         }
     }
 }
