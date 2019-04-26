@@ -15,20 +15,25 @@
 /*
 // Heuristic:
 //version4:
-possible wins of target(having 2/3 in a row/column/diagnose)
-1. if blocking a 2 !target, counts 1
+possible wins of target(having 2 in a row/column/diagnose)
+1. if there is a blocking of a 2 !target, counts 1
 2. 1 target in a row/column/diagnose counts 0.2
 */
 //Eval version 4
 int Eval(int subboard[10],int target){
     int wins = 0;
     for(int i = 1; i<10;i = i+3){
-        if(// having 2 Xs
+        if(// having 2 targets
             (subboard[i] ==target && subboard[i+1] ==target && subboard[i+2] ==2)||
             (subboard[i] ==2 && subboard[i+1] ==target && subboard[i+2] ==target)||
             (subboard[i] ==target && subboard[i+1] ==2 && subboard[i+2] ==target)
         ){wins++;}
-        if(// having 1 X
+        if(// a blocking
+            (subboard[i] ==!target && subboard[i+1] ==!target && subboard[i+2] ==target)||
+            (subboard[i] ==target && subboard[i+1] ==!target && subboard[i+2] ==!target)||
+            (subboard[i] ==!target && subboard[i+1] ==target && subboard[i+2] ==!target)
+        ){wins++;}
+        if(// having 1 target
             (subboard[i] ==target && subboard[i+1] ==2 && subboard[i+2] ==2)||
             (subboard[i] ==2 && subboard[i+1] ==target && subboard[i+2] ==2)||
             (subboard[i] ==2 && subboard[i+1] ==2 && subboard[i+2] ==target)
@@ -40,12 +45,17 @@ int Eval(int subboard[10],int target){
     }
     //columns
     for(int i = 1; i<4;i++){
-        if(// having 2 Xs
+        if(// having 2 targets
             (subboard[i] ==target && subboard[i+3] ==target && subboard[i+6] ==2)||
             (subboard[i] ==2 && subboard[i+3] ==target && subboard[i+6] ==target)||
             (subboard[i] ==target && subboard[i+3] ==2 && subboard[i+6] ==target)
         ){wins++;}
-        if(// having 1 X
+        if(// a blocking
+            (subboard[i] ==!target && subboard[i+3] ==!target && subboard[i+6] ==target)||
+            (subboard[i] ==target && subboard[i+3] ==!target && subboard[i+6] ==!target)||
+            (subboard[i] ==!target && subboard[i+3] ==target && subboard[i+6] ==!target)
+        ){wins++;}
+        if(// having 1 target
             (subboard[i] ==target && subboard[i+3] ==2 && subboard[i+6] ==2)||
             (subboard[i] ==2 && subboard[i+3] ==target && subboard[i+6] ==2)||
             (subboard[i] ==2 && subboard[i+3] ==2 && subboard[i+6] ==target)
@@ -56,38 +66,39 @@ int Eval(int subboard[10],int target){
         }
     }
     //diagnoses
-    if(// having 2 Xs
+    if(// having 2 targets
         (subboard[1] ==target && subboard[5] ==target && subboard[9] ==2)||
         (subboard[1] ==2 && subboard[5] ==target && subboard[9] ==target)||
         (subboard[1] ==target && subboard[5] ==2 && subboard[9] ==target)
     ){wins++;}
-    if(//having 1 X
+    if(// a blocking
+        (subboard[1] ==!target && subboard[5] ==!target && subboard[9] ==target)||
+        (subboard[1] ==target && subboard[5] ==!target && subboard[9] ==!target)||
+        (subboard[1] ==!target && subboard[5] ==target && subboard[9] ==!target)
+    ){wins++;}
+    if(//having 1 target
         (subboard[1] ==target && subboard[5] ==2 && subboard[9] ==2)||
         (subboard[1] ==2 && subboard[5] ==target && subboard[9] ==2)||
         (subboard[1] ==2 && subboard[5] ==2 && subboard[9] ==target)
     ){wins = wins + 0.2;}
-    if(// having 2 Xs
+    if(// having 2 targets
         (subboard[3] ==target && subboard[5] ==target && subboard[7] ==2)||
         (subboard[3] ==2 && subboard[5] ==target && subboard[7] ==target)||
         (subboard[3] ==target && subboard[5] ==2 && subboard[7] ==target)
     ){wins++;}
-    if(// having 1 X
+    if(// a blocking
+        (subboard[3] ==!target && subboard[5] ==!target && subboard[7] ==target)||
+        (subboard[3] ==target && subboard[5] ==!target && subboard[7] ==!target)||
+        (subboard[3] ==!target && subboard[5] ==target && subboard[7] ==!target)
+    ){wins++;}
+    if(// having 1 target
         (subboard[3] ==target && subboard[5] ==2 && subboard[7] ==2)||
         (subboard[3] ==2 && subboard[5] ==target && subboard[7] ==2)||
         (subboard[3] ==2 && subboard[5] ==2 && subboard[7] ==target)
     ){wins = wins + 0.2;}
-    if(//empty
-        subboard[1] ==2 && subboard[5] ==2 && subboard[9] ==2
-    ){
-        wins = wins + 0.2;
-    }
-    if(//empty
-        subboard[3] ==2 && subboard[5] ==2 && subboard[7] ==2
-    ){
-        wins = wins + 0.2;
-    }
     return wins*10;
 }
+// check if can block the target player, yes return 1, otherwise return 0;
 int Blocking(int subboard[10],int target, int position){
     //diagnoses
     if(
@@ -146,6 +157,7 @@ int Blocking(int subboard[10],int target, int position){
     }
     return 0;
 }
+// calculate the number of target player in a sub-board
 int Cal(int subboard[10],int target){
     int count = 0;
     for(int i = 1;i<10;i++){
@@ -204,7 +216,7 @@ int isWon(int subboard[10],int target, int mode){
     return 0;
 }
 /*
-//alpha beta search Algorithm:
+//alpha beta search Algorithm pseudo code:
 function alphabeta( node, depth, α, β )
     if node is a terminal node or depth == 0
         return heuristic value of node
@@ -221,6 +233,8 @@ function alphabeta( node, depth, α, β )
                 return β
         return β
 */
+
+//check a sub-board is full
 int isFull(int board[10]){
     for(int i = 1;i<10;i++){
         if(board[i] == 2){
@@ -229,6 +243,7 @@ int isFull(int board[10]){
     }
     return 1;
 }
+// get the score for each potential case
 int alphabeta(int board[10][10], int prev_move, int depth, int alpha, int beta, int Player)
 {
     // int val;
@@ -240,10 +255,14 @@ int alphabeta(int board[10][10], int prev_move, int depth, int alpha, int beta, 
             if(board[prev_move][i] == 2){
                 board[prev_move][i] = Player;
                 if(Player == 0){
+                    // place where I adjusted
+                    // go to the next board
                     alpha = max(alpha,alphabeta(board,i,depth-1,alpha,beta,!Player));
                     board[prev_move][i] = 2;
                     if(alpha >= beta){return alpha;}
                 }else{
+                    // place where I adjusted
+                    // go to the next board
                     beta = min(beta, alphabeta(board,i,depth-1,alpha,beta,!Player));
                     board[prev_move][i] = 2;
                     if(alpha >= beta){return beta;}
@@ -257,6 +276,7 @@ int alphabeta(int board[10][10], int prev_move, int depth, int alpha, int beta, 
         }        
     }
 }
+// get the best move
 int getBestMove(int board[10][10], int prev_move, int depth, int player){
     int val;
     int Performance[10] = {0,-1,-1,-1,-1,-1,-1,-1,-1,-1};
